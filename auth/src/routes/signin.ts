@@ -4,8 +4,7 @@ import jwt from "jsonwebtoken";
 
 import { Password } from "../services/password";
 import { User } from "../models/user";
-import { validateRequest } from "../middlewares/validate-request";
-import { BadRequestError } from "../errors/bad-request-error";
+import { validateRequest, BadRequestError } from "@twicetickets/common";
 
 const router = express.Router();
 
@@ -21,6 +20,7 @@ router.post(
   validateRequest,
   async (req: Request, res: Response) => {
     const { email, password } = req.body;
+    console.log("ip", req.ip);
 
     const existingUser = await User.findOne({ email });
     if (!existingUser) {
