@@ -3,8 +3,8 @@ import { body } from "express-validator";
 import jwt from "jsonwebtoken";
 
 import { Password } from "../services/password";
-import { User } from "../models/user";
 import { validateRequest, BadRequestError } from "@twicetickets/common";
+import { User } from "../models/User";
 
 const router = express.Router();
 
@@ -20,7 +20,6 @@ router.post(
   validateRequest,
   async (req: Request, res: Response) => {
     const { email, password } = req.body;
-    console.log("ip", req.ip);
 
     const existingUser = await User.findOne({ email });
     if (!existingUser) {
