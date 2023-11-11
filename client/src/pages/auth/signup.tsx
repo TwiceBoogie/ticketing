@@ -13,7 +13,7 @@ const Signup = ({ currentUser }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { doRequest, errors } = useRequest({
-    url: "/api-gateway/signup",
+    url: "/api/users/signup",
     method: "post",
     body: {
       email,
@@ -58,8 +58,8 @@ const Signup = ({ currentUser }: Props) => {
 export default Signup;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const client = buildClient(context);
-  const { data } = await client.get("/api-gateway/currentuser");
+  const client = buildClient("auth-srv", context);
+  const { data } = await client.get("/api/users/currentuser");
   return {
     props: {
       currentUser: data.currentUser,

@@ -3,21 +3,23 @@ import { GetServerSideProps } from "next";
 import React from "react";
 import buildClient from "../api/build-client";
 
-type Props = {
-  currentUser: string;
-};
+interface Tickets {
+  id: number,
+  title: string,
+  price: string
+}
 
-export default function Home({ currentUser }: Props) {
+export default function Home(tickets: Tickets) {
   return (
-    <Layout currentUser={currentUser}>
+    <Layout>
       <h1>Welcome</h1>
     </Layout>
   );
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const client = buildClient(context);
-  const { data } = await client.get("/api-gateway/currentuser");
+  const client = buildClient("auth-srv", context);
+  const { data } = await client.get("/api/users/currentuser");
   return {
     props: {
       currentUser: data.currentUser,

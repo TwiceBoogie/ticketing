@@ -6,7 +6,7 @@ const Signin = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const { doRequest, errors } = useRequest({
-    url: "/api-gateway/signin",
+    url: "/api/users/signin",
     method: "post",
     body: {
       email,

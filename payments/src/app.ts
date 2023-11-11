@@ -12,9 +12,18 @@ app.use(json());
 app.use(
   cookieSession({
     signed: false,
-    secure: process.env.NODE_ENV !== "test",
+    // secure: process.env.NODE_ENV !== "test",
+    secure: true,
+    name: "jwt",
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
   })
 );
+
+app.use((req, res, next) => {
+  console.log(`Received request: ${req.method} ${req.url}`);
+  next();
+});
+
 app.use(currentUser);
 
 app.use(createChargeRouter);

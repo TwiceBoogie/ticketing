@@ -38,7 +38,7 @@ const useRequest = <T extends {}>({
     try {
       setErrors(null);
       const response = await axiosInstance[method](url, { ...body, ...props }); // use the axiosInstance object instead of axios
-      console.log("this should be my res", response);
+      // console.log("this should be my res", response);
 
       if (onSuccess) {
         onSuccess(response.data);

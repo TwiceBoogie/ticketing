@@ -1,12 +1,13 @@
 import axios, { AxiosInstance } from "axios";
 import { GetServerSidePropsContext } from "next";
 
-const buildClient = ({ req }: GetServerSidePropsContext): AxiosInstance => {
+const buildClient = (serviceName: string, { req }: GetServerSidePropsContext): AxiosInstance => {
   if (typeof window === "undefined") {
     // We are on the server
 
+    const baseURL = `http://${serviceName}.default.svc.cluster.local:3000`;
     return axios.create({
-      baseURL: "http://api-gateway-srv.default.svc.cluster.local:3000",
+      baseURL,
       headers: req.headers,
     });
   } else {

@@ -4,7 +4,6 @@ import { currentUser } from "@twicetickets/common";
 const router = express.Router();
 
 router.get("/api/users/currentuser", currentUser, (req, res) => {
-  let tmp = req.session?.jwt;
   res.send({ currentUser: req.currentUser || null });
 });
 
