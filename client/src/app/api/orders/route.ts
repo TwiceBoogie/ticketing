@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
     const cookie = req.headers.get("Cookie");
     const data = await req.json();
 
-    const res = await fetch("http://localhost:3002/api/orders", {
+    const res = await fetch(`${process.env.ORDERS_ENDPOINT!}/api/orders`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

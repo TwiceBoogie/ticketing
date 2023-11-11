@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 export async function GET(req: Request) {
   try {
     const cookie = req.headers.get("Cookie");
-    const res = await fetch("http://localhost:3001/api/users/signout", {
+    const res = await fetch(`${process.env.AUTH_ENDPOINT}/api/users/signout`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

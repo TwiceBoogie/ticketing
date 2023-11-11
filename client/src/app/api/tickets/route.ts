@@ -5,7 +5,7 @@ export async function POST(req: Request) {
   try {
     const jwt = cookies().get("jwt");
     const data = await req.json();
-    const res = await fetch("http://localhost:3004/api/tickets", {
+    const res = await fetch(`${process.env.TICKETS_ENDPOINT!}/api/tickets`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -38,17 +38,20 @@ export async function PUT(req: Request) {
     const body = await req.json();
     const itemId = body.id;
 
-    const res = await fetch(`http://localhost:3004/api/tickets/${body.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: String(cookie),
-      },
-      body: JSON.stringify({
-        title: body.title,
-        price: body.price,
-      }),
-    });
+    const res = await fetch(
+      `${process.env.TICKETS_ENDPOINT!}/api/tickets/${body.id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: String(cookie),
+        },
+        body: JSON.stringify({
+          title: body.title,
+          price: body.price,
+        }),
+      }
+    );
     const responseData = await res.json();
     console.log(responseData);
     revalidateTag("tickets");

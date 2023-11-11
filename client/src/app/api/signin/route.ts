@@ -6,7 +6,7 @@ const redis = createRedisInstance();
 export async function POST(req: Request) {
   try {
     const data = await req.json();
-    const res = await fetch("http://localhost:3001/api/users/signin", {
+    const res = await fetch(`${process.env.AUTH_ENDPOINT!}/api/users/signin`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -61,16 +61,19 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
   const cookie = req.headers.get("Cookie");
-  const res = await fetch("http://localhost:3001/api/users/currentuser", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: String(cookie),
-    },
-    next: {
-      tags: ["user"],
-    },
-  });
+  const res = await fetch(
+    `${process.env.AUTH_ENDPOINT!}/api/users/currentuser`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: String(cookie),
+      },
+      next: {
+        tags: ["user"],
+      },
+    }
+  );
   const responseData = await res.json();
 
   return Response.json({

@@ -1,7 +1,7 @@
 export async function POST(req: Request) {
   try {
     const data = await req.json();
-    const res = await fetch("http://localhost:3001/api/users/signup", {
+    const res = await fetch(`${process.env.AUTH_ENDPOINT!}/api/users/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
