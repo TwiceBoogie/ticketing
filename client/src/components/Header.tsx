@@ -1,42 +1,92 @@
+"use client";
 import Link from "next/link";
+import {
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem,
+} from "@nextui-org/navbar";
+import SellTicketButton from "./buttons/SellTicketButton";
+import { Suspense, useEffect, useState } from "react";
+import DarkModeToggle from "./buttons/DarkModeToggle";
+import SignButton from "./buttons/SignButton";
+import SignOut from "./buttons/SignOut";
 
-type AppProps = {
-  currentUser: string;
-};
 type LinkConfig = {
   label: string;
   href: string;
 };
 
-export const Header = ({ currentUser }: AppProps) => {
-  const links = [
-    !currentUser && { label: "Sign Up", href: "/auth/signup" },
-    !currentUser && { label: "Sign In", href: "/auth/signin" },
-    currentUser && { label: "Sell Tickets", href: "/tickets/new" },
-    currentUser && { label: "My Orders", href: "/orders" },
-    currentUser && { label: "Sign Out", href: "/auth/signout" },
-    currentUser && { label: "Account", href: "/account" },
-  ]
-    .filter((linkConfig): linkConfig is LinkConfig => !!linkConfig)
-    .map(({ label, href }) => {
-      return (
-        <li key={href} className="nav-item">
-          <Link href={href} legacyBehavior>
-            <a className="nav-link">{label}</a>
-          </Link>
-        </li>
-      );
-    });
+interface CurrentUserI {
+  currentUser: {
+    id: string;
+    email: string;
+  } | null;
+}
 
+export const Header = () => {
+  const [user, setUser] = useState<CurrentUserI>();
+  const [links, setLinks] = useState<LinkConfig[]>([]);
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Generate the links based on the user's authentication status
+    if (!user) {
+      const fetchData = async () => {
+        try {
+          const res = await fetch("/api/signin", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          const data: CurrentUserI = await res.json();
+
+          setUser({ ...data });
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      fetchData();
+    }
+
+    user?.currentUser ? setLoggedIn(true) : setLoggedIn(false);
+  }, [user]);
   return (
-    <nav className="navbar navbar-light bg-light">
-      <Link href="/" legacyBehavior>
-        <a className="navbar-brand">GitTix</a>
-      </Link>
+    <Navbar>
+      <NavbarBrand>
+        <Link href="/" className="font-bold ">
+          GitTix
+        </Link>
+      </NavbarBrand>
 
-      <div className="d-flex justify-content-end">
-        <ul className="nav d-flex align-items-center">{links}</ul>
-      </div>
-    </nav>
+      <NavbarContent className="hidden sm:flex gap-4" justify="end">
+        {loggedIn ? (
+          <>
+            <SellTicketButton />
+            <SignOut />
+          </>
+        ) : (
+          <>
+            <NavbarItem key={1}>
+              <SignButton
+                setUser={setUser}
+                url={`/api/signup`}
+                title="Sign Up"
+              />
+            </NavbarItem>
+            <NavbarItem key={2}>
+              <SignButton
+                setUser={setUser}
+                url={`/api/signin`}
+                title="Sign In"
+              />
+            </NavbarItem>
+          </>
+        )}
+
+        <DarkModeToggle />
+      </NavbarContent>
+    </Navbar>
   );
 };
