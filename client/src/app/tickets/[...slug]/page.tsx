@@ -11,13 +11,16 @@ interface Props {
 
 async function getTicket(ticketId: string) {
   try {
-    const res = await fetch(`http://localhost:3004/api/tickets/${ticketId}`, {
-      method: "get",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      cache: "no-store",
-    });
+    const res = await fetch(
+      `${process.env.TICKETS_ENDPOINT!}/api/tickets/${ticketId}`,
+      {
+        method: "get",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        cache: "no-store",
+      }
+    );
     const responseData = await res.json();
 
     return responseData;
@@ -28,7 +31,6 @@ async function getTicket(ticketId: string) {
 
 export default async function Tickets({ params }: Props) {
   const data = await getTicket(params.ticketId);
-  console.log(data, "in ticketId regular");
 
   return (
     <div className="flex justify-center">

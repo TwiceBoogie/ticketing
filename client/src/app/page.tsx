@@ -16,7 +16,7 @@ const redis = createRedisInstance();
 
 async function getTickets() {
   try {
-    const res = await fetch("http://localhost:3004/api/tickets", {
+    const res = await fetch(`${process.env.TICKETS_ENDPOINT!}/api/tickets`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -41,7 +41,7 @@ async function getOrders(jwt: RequestCookie | undefined) {
       return [{ error: "not authorized" }];
     }
 
-    const res = await fetch("http://localhost:3002/api/orders", {
+    const res = await fetch(`${process.env.ORDERS_ENDPOINT!}/api/orders`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
