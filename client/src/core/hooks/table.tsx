@@ -79,51 +79,54 @@ export function useSortedItems<T extends Data[]>({
 }
 
 export const useRenderCell = ({ handleActions }: RenderCell) => {
-  return useCallback((data: Data, columnKey: React.Key) => {
-    const cellValue = data[columnKey as keyof Data];
+  return useCallback(
+    (data: Data, columnKey: React.Key) => {
+      const cellValue = data[columnKey as keyof Data];
 
-    switch (columnKey) {
-      case "id":
-        return (
-          <Button key={cellValue} as={Link} href={`/tickets/${cellValue}`}>
-            Add to Cart
-          </Button>
-        );
-      case "orderId":
-        return (
-          <Dropdown>
-            <DropdownTrigger>
-              <Button variant="bordered">Open Menu</Button>
-            </DropdownTrigger>
-            <DropdownMenu
-              aria-label="Static Actions"
-              className="text-black"
-              onAction={handleActions}
-            >
-              <DropdownItem
-                key="proceed"
-                as={Link}
-                href={`/orders/${cellValue}`}
+      switch (columnKey) {
+        case "id":
+          return (
+            <Button key={cellValue} as={Link} href={`/tickets/${cellValue}`}>
+              Add to Cart
+            </Button>
+          );
+        case "orderId":
+          return (
+            <Dropdown>
+              <DropdownTrigger>
+                <Button variant="bordered">Open Menu</Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                aria-label="Static Actions"
+                className="text-black"
+                onAction={handleActions}
               >
-                Proceed to Checkout
-              </DropdownItem>
-              <DropdownItem key={`update-${cellValue}`}>
-                Update Order
-              </DropdownItem>
-              <DropdownItem
-                key={`delete-${cellValue}`}
-                className="text-danger"
-                color="danger"
-              >
-                Delete Order
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-        );
-      default:
-        return <div className="flex justify-center">cellValue</div>;
-    }
-  }, []);
+                <DropdownItem
+                  key="proceed"
+                  as={Link}
+                  href={`/orders/${cellValue}`}
+                >
+                  Proceed to Checkout
+                </DropdownItem>
+                <DropdownItem key={`update-${cellValue}`}>
+                  Update Order
+                </DropdownItem>
+                <DropdownItem
+                  key={`delete-${cellValue}`}
+                  className="text-danger"
+                  color="danger"
+                >
+                  Delete Order
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          );
+        default:
+          return <div className="flex justify-center">cellValue</div>;
+      }
+    },
+    [handleActions]
+  );
 };
 
 export const useOnNextPage = ({ page, pages, setPage }: UseOnNextPageI) => {

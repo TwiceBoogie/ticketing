@@ -142,7 +142,7 @@ const TableContent = <T extends Data[]>({
     }
   };
 
-  const pages = Math.ceil(data.length / rowsPerPage);
+  const pages = Math.ceil((data?.length ?? 0) / rowsPerPage);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -204,13 +204,7 @@ const TableContent = <T extends Data[]>({
         </div>
       </div>
     );
-  }, [
-    filterValue,
-    onSearchChange,
-    onRowsPerPageChange,
-    data.length,
-    hasSearchFilter,
-  ]);
+  }, [filterValue, onSearchChange, onRowsPerPageChange, data.length, type]);
 
   const bottomContent = useMemo(() => {
     return (
@@ -248,7 +242,7 @@ const TableContent = <T extends Data[]>({
         </div>
       </div>
     );
-  }, []);
+  }, [hasSearchFilter, onNextPage, onPreviousPage, page, pages]);
 
   const renderCell = useCallback(
     (item: Data, ColumnKey: React.Key) => {
@@ -305,7 +299,7 @@ const TableContent = <T extends Data[]>({
           return cellValue;
       }
     },
-    [data]
+    [type, userId]
   );
 
   return (

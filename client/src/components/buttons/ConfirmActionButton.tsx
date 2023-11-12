@@ -63,7 +63,7 @@ const ConfirmActionButton = ({
     } else {
       setIsEmpty(false);
     }
-  }, [title, price]);
+  }, [title, price, action, setInvalidT, setInvalidP, setIsEmpty]);
 
   useEffect(() => {
     if (!isEmpty) {
@@ -92,7 +92,7 @@ const ConfirmActionButton = ({
 
       fetchData();
     }
-  }, [isEmpty]);
+  }, [isEmpty, id, method, price, setSuccess, title, url]);
   return (
     <>
       <Button color="primary" onPress={handleAction} isDisabled={disabled}>

@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { cookies } from "next/headers";
 
 export async function GET(req: Request) {
