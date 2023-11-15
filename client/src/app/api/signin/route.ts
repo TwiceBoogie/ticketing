@@ -1,4 +1,5 @@
 import { createRedisInstance } from "@/core/config";
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
 const redis = createRedisInstance();
@@ -37,11 +38,12 @@ export async function POST(req: Request) {
 
     if (jwtMatch && jwtMatch[1]) {
       const jwt = jwtMatch[1].split(";")[0];
-      console.log(jwt, "new jwt"); // This will print the captured JWT
       redis.set(jwt, responseData.id);
     } else {
       console.log("JWT not found in the cookie string");
     }
+
+    revalidatePath("/");
 
     return new Response(
       JSON.stringify({

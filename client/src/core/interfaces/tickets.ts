@@ -1,5 +1,5 @@
 export type Ticket = {
-  id: number;
+  id: string;
   title: string;
   userId: string;
   price: number;

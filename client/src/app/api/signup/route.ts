@@ -1,3 +1,8 @@
+import { createRedisInstance } from "@/core/config";
+import { revalidatePath } from "next/cache";
+
+const redis = createRedisInstance();
+
 export async function POST(req: Request) {
   try {
     const data = await req.json();
@@ -12,35 +17,32 @@ export async function POST(req: Request) {
 
     if (!res.ok) {
       // If there's an error, keep the original response body structure
-      const newHeaders: Record<string, string> = {
-        "Content-Type": "application/json", // Include other headers as needed
-      };
-      const setCookieHeader = res.headers.get("Set-Cookie");
-      if (setCookieHeader) {
-        newHeaders["Set-Cookie"] = setCookieHeader;
-      }
-
-      return new Response(
-        JSON.stringify({
-          status: res.status,
-          message: responseData,
-          errors: responseData.errors,
-        }),
-        {
-          headers: newHeaders,
-          status: res.status,
-        }
-      );
+      return Response.json({
+        status: res.status,
+        message: "Api Error",
+        errors: responseData.errors,
+      });
     }
 
     // If the response is successful, create a new response with the same body structure
     const newHeaders: Record<string, string> = {
       "Content-Type": "application/json", // Include other headers as needed
     };
-    const setCookieHeader = res.headers.get("Set-Cookie");
+    const setCookieHeader = res.headers.get("Set-Cookie") as string;
     if (setCookieHeader) {
       newHeaders["Set-Cookie"] = setCookieHeader;
     }
+
+    const jwtMatch = setCookieHeader.match(/jwt=(.+)/);
+
+    if (jwtMatch && jwtMatch[1]) {
+      const jwt = jwtMatch[1].split(";")[0];
+      redis.set(jwt, responseData.id);
+    } else {
+      console.log("JWT not found in the cookie string");
+    }
+
+    revalidatePath("/");
 
     return new Response(
       JSON.stringify({

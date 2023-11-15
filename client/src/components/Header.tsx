@@ -1,4 +1,3 @@
-"use client";
 import Link from "next/link";
 import {
   Navbar,
@@ -7,10 +6,15 @@ import {
   NavbarItem,
 } from "@nextui-org/navbar";
 import SellTicketButton from "./buttons/SellTicketButton";
-import { Suspense, useEffect, useState } from "react";
 import DarkModeToggle from "./buttons/DarkModeToggle";
 import SignButton from "./buttons/SignButton";
 import SignOut from "./buttons/SignOut";
+import { cookies } from "next/headers";
+import { createRedisInstance } from "@/core/config";
+import { Button } from "@nextui-org/button";
+import { Suspense } from "react";
+
+const redis = createRedisInstance();
 
 type LinkConfig = {
   label: string;
@@ -24,34 +28,28 @@ interface CurrentUserI {
   } | null;
 }
 
-export const Header = () => {
-  const [user, setUser] = useState<CurrentUserI>();
-  const [links, setLinks] = useState<LinkConfig[]>([]);
-  const [loggedIn, setLoggedIn] = useState(false);
+async function getCurrentUser() {
+  try {
+    const jwt = cookies().get("jwt");
+    const res = await fetch("http://localhost:3001/api/users/currentuser", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: `jwt=${jwt?.value}`,
+      },
+    });
+    const responseData: CurrentUserI = await res.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+    return { currentUser: null };
+  }
+}
 
-  useEffect(() => {
-    // Generate the links based on the user's authentication status
-    if (!user) {
-      const fetchData = async () => {
-        try {
-          const res = await fetch("/api/signin", {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-          const data: CurrentUserI = await res.json();
+export const Header = async () => {
+  const user: CurrentUserI = await getCurrentUser();
+  let loggedIn = user.currentUser ? true : false;
 
-          setUser({ ...data });
-        } catch (error) {
-          console.log(error);
-        }
-      };
-      fetchData();
-    }
-
-    user?.currentUser ? setLoggedIn(true) : setLoggedIn(false);
-  }, [user]);
   return (
     <Navbar>
       <NavbarBrand>
@@ -63,29 +61,34 @@ export const Header = () => {
       <NavbarContent className="hidden sm:flex gap-4" justify="end">
         {loggedIn ? (
           <>
-            <SellTicketButton />
-            <SignOut />
+            <NavbarItem>
+              <Suspense>
+                <SellTicketButton />
+              </Suspense>
+            </NavbarItem>
+            <NavbarItem>
+              <Suspense>
+                <SignOut />
+              </Suspense>
+            </NavbarItem>
           </>
         ) : (
           <>
-            <NavbarItem key={1}>
-              <SignButton
-                setUser={setUser}
-                url={`/api/signup`}
-                title="Sign Up"
-              />
+            <NavbarItem>
+              <Suspense>
+                <SignButton url="/api/signup" title="Sign Up" />
+              </Suspense>
             </NavbarItem>
-            <NavbarItem key={2}>
-              <SignButton
-                setUser={setUser}
-                url={`/api/signin`}
-                title="Sign In"
-              />
+            <NavbarItem>
+              <Suspense>
+                <SignButton url="/api/signin" title="Sign In" />
+              </Suspense>
             </NavbarItem>
           </>
         )}
-
-        <DarkModeToggle />
+        <Suspense>
+          <DarkModeToggle />
+        </Suspense>
       </NavbarContent>
     </Navbar>
   );

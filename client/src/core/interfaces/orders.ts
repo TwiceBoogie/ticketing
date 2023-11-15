@@ -5,13 +5,15 @@ export type Order = {
   expiresAt: string;
   status: string;
   ticket: Ticket;
+  createdAt: string;
 };
 
 export type TransformOrder = {
   id: number;
   status: string;
   expiresAt: string;
-  ticketId: number;
+  ticketId: string;
   title: string;
   price: number;
+  createdAt: string;
 };

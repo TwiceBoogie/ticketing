@@ -1,6 +1,6 @@
 import InterceptModals from "@/components/InterceptModals";
 import { cookies } from "next/headers";
-import React from "react";
+import { createRedisInstance } from "@/core/config";
 
 interface Props {
   params: {
@@ -9,7 +9,7 @@ interface Props {
 }
 
 interface Order {
-  userId: number;
+  userId: string;
   status: string;
   expiresAt: string;
   ticket: {
@@ -20,39 +20,20 @@ interface Order {
   id: string;
 }
 
-async function getOrder(orderId: string) {
+const redis = createRedisInstance();
+
+async function getOrder(orderId: string, jwt: string) {
   try {
-    const cookieStore = cookies();
-    const jwt = cookieStore.get("jwt");
-
-    const res = await fetch(`http://localhost:3002/api/orders/${orderId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: `jwt=${jwt?.value}`,
-      },
-    });
-    const responseData = await res.json();
-
-    return responseData;
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-async function getUser() {
-  try {
-    const cookieStore = cookies();
-    const jwt = cookieStore.get("jwt");
-
-    const res = await fetch("http://localhost:3001/api/users/currentuser", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: `jwt=${jwt?.value}`,
-      },
-      cache: "no-store",
-    });
+    const res = await fetch(
+      `${process.env.ORDERS_ENDPOINT!}/api/orders/${orderId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `jwt=${jwt}`,
+        },
+      }
+    );
     const responseData = await res.json();
 
     return responseData;
@@ -62,12 +43,25 @@ async function getUser() {
 }
 
 const page = async ({ params }: Props) => {
-  const data: Order = await getOrder(params.slug[1]);
-  const user = await getUser();
+  let action = "error";
+  let userId: string | null = "";
+  let order = {} as Order;
+
+  const jwt = cookies().get("jwt");
+  if (jwt?.value && params.slug[0] === "delete") {
+    userId = await redis.get(jwt.value);
+    action = "delete";
+    order = await getOrder(params.slug[1], jwt.value);
+  }
+  if (!userId || order.userId !== userId) action = "error";
 
   return (
-    <InterceptModals data={data} action="purchase" userEmail={user.email}>
-      Price: ${data.ticket.price}
+    <InterceptModals data={order} action={action}>
+      {action === "error" ? (
+        <p>Not Authorized</p>
+      ) : (
+        <p>Price: ${order.ticket.price}</p>
+      )}
     </InterceptModals>
   );
 };

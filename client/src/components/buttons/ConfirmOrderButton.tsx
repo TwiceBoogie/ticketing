@@ -13,7 +13,7 @@ const ConfirmOrderButton = ({ ticketId, setSuccess }: Props) => {
   const [disabled, setDisabled] = useState(false);
   const handleOrder = async () => {
     try {
-      const res = await fetch("/api/orders", {
+      const res = await fetch("/api/checkout_sessions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -23,6 +23,7 @@ const ConfirmOrderButton = ({ ticketId, setSuccess }: Props) => {
         }),
       });
       const data = await res.json();
+      console.log(data);
       if (res.ok) {
         setSuccess(true);
       }

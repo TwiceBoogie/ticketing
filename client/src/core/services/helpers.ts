@@ -1,4 +1,4 @@
-// import { Stripe, loadStripe } from "@stripe/stripe-js";
+import { Stripe, loadStripe } from "@stripe/stripe-js";
 import { Order } from "..";
 
 export function generateRandomKey(length: number) {
@@ -20,13 +20,14 @@ export function transformOrder(order: Order) {
     ticketId: order.ticket.id,
     title: order.ticket.title,
     price: order.ticket.price,
+    createdAt: order.createdAt,
   };
 }
 
-// let stripePromise: Promise<Stripe | null>;
-// export function getStripe() {
-//   if (!stripePromise) {
-//     stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
-//   }
-//   return stripePromise;
-// }
+let stripePromise: Promise<Stripe | null>;
+export function getStripe() {
+  if (!stripePromise) {
+    stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+  }
+  return stripePromise;
+}

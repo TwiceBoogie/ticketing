@@ -6,6 +6,7 @@ import { createRedisInstance } from "@/core/config";
 import { Ticket } from "@/core";
 import TableContent from "@/components/TableContent";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
+import Loading from "./loading";
 
 type OrdersResponse = Order[] | NotAuthorized[];
 type NotAuthorized = {
@@ -47,7 +48,6 @@ async function getOrders(jwt: RequestCookie | undefined) {
         "Content-Type": "application/json",
         Cookie: `jwt=${jwt?.value}`,
       },
-      cache: "no-store",
     });
     const responseData = await res.json();
     console.log("fetching orders");
@@ -90,17 +90,19 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col lg:flex-row h-fit gap-4 text-center">
-      <div className="flex flex-col gap-4 p-10 card1">
-        <h1 className="flex justify-center">Available Tickets</h1>
-        <Suspense>
+      <div className="flex flex-col gap-4 p-10 card2 dark:card1">
+        <h1 className="flex justify-center text-2xl font-bold">
+          Available Tickets
+        </h1>
+        <Suspense fallback={<Loading />}>
           <TableContent data={tickets} type="tickets" userId={userId} />
         </Suspense>
       </div>
       {loggedIn && (
-        <div className="flex flex-col gap-4 p-10 card1">
+        <div className="flex flex-col gap-4 p-10 card2 dark:card1">
           <>
-            <h1 className="flex justify-center">Orders</h1>
-            <Suspense>
+            <h1 className="flex justify-center text-2xl font-bold">Orders</h1>
+            <Suspense fallback={<Loading />}>
               <TableContent
                 data={transformOrders}
                 type="orders"

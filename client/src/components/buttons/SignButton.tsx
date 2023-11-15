@@ -1,4 +1,5 @@
-import { useState, type Dispatch, type SetStateAction } from "react";
+"use client";
+import { useState } from "react";
 
 import {
   Modal,
@@ -10,6 +11,8 @@ import {
 } from "@nextui-org/modal";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
+import { useRouter } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 interface CurrentUserI {
   currentUser: {
@@ -31,12 +34,12 @@ interface SignupRes {
 }
 
 interface Props {
-  setUser: Dispatch<SetStateAction<CurrentUserI | undefined>>;
   url: string;
   title: string;
 }
 
-const SignButton = ({ setUser, url, title }: Props) => {
+const SignButton = ({ url, title }: Props) => {
+  const router = useRouter();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -67,13 +70,8 @@ const SignButton = ({ setUser, url, title }: Props) => {
         });
 
         const data: SignupRes = await res.json();
-        if (data.status === 201) {
-          const user = {
-            currentUser: data.message,
-          };
-          setUser(user);
-        }
-        if (data.status !== 201) {
+
+        if (!res.ok) {
           data.errors.map((error) => {
             if (Object.keys(error).length === 1) {
               setError(error.message);
@@ -83,6 +81,8 @@ const SignButton = ({ setUser, url, title }: Props) => {
             }
           });
         }
+
+        router.refresh();
       } catch (error) {
         console.log(error);
       }

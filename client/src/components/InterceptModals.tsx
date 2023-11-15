@@ -17,7 +17,6 @@ interface Props {
   children: ReactNode;
   action: string;
   data: Order | Ticket;
-  userEmail: string;
 }
 
 interface Ticket {
@@ -27,7 +26,7 @@ interface Ticket {
 }
 
 interface Order {
-  userId: number;
+  userId: string;
   status: string;
   expiresAt: string;
   ticket: {
@@ -42,7 +41,7 @@ function isTicket(data: Ticket | Order): data is Ticket {
   return (data as Ticket).title !== undefined;
 }
 
-const InterceptModals: FC<Props> = ({ children, data, action, userEmail }) => {
+const InterceptModals: FC<Props> = ({ children, data, action }) => {
   let openn = false;
   if (data) {
     openn = true;
@@ -78,7 +77,7 @@ const InterceptModals: FC<Props> = ({ children, data, action, userEmail }) => {
       );
     } else {
       // order ticket
-      console.log("hit order ticket");
+      title = data.title;
       buttonComponent = (
         <ConfirmActionButton
           id={data.id}
@@ -93,6 +92,7 @@ const InterceptModals: FC<Props> = ({ children, data, action, userEmail }) => {
     }
   } else {
     // delete order
+    title = data.ticket.title;
     if (action === "delete") {
       buttonComponent = (
         <ConfirmActionButton
@@ -106,15 +106,8 @@ const InterceptModals: FC<Props> = ({ children, data, action, userEmail }) => {
         />
       );
     } else {
-      // make purchase
-      title = data.ticket.title;
-      buttonComponent = (
-        <StripePayment
-          expiresAt={data.expiresAt}
-          userEmail={userEmail}
-          amount={data.ticket.price}
-        />
-      );
+      // error / not authorized
+      title = "Error";
     }
   }
 

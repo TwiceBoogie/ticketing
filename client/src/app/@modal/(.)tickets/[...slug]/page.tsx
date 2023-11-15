@@ -20,12 +20,15 @@ interface Ticket {
 
 async function getTicket(ticketId: string) {
   try {
-    const res = await fetch(`http://localhost:3004/api/tickets/${ticketId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const res = await fetch(
+      `${process.env.TICKETS_ENDPOINT!}/api/tickets/${ticketId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     const responseData = await res.json();
     return responseData;
   } catch (error) {
@@ -36,6 +39,7 @@ async function getTicket(ticketId: string) {
 const page = async ({ params }: Props) => {
   const data: Ticket = await getTicket(params.slug[1]);
   const jwt = cookies().get("jwt");
+
   let userId: string | null = "";
   if (jwt?.value) {
     userId = await redis.get(jwt.value);
@@ -54,7 +58,7 @@ const page = async ({ params }: Props) => {
   }
   return (
     <Suspense>
-      <InterceptModals data={data} action={action} userEmail="">
+      <InterceptModals data={data} action={action}>
         Price: ${data.price}
       </InterceptModals>
     </Suspense>

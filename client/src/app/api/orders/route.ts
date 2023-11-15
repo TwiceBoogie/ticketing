@@ -1,16 +1,18 @@
 import { revalidatePath, revalidateTag } from "next/cache";
-import { NextRequest } from "next/server";
+import { cookies } from "next/headers";
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
-    const cookie = req.headers.get("Cookie");
+    const cookieArray = req.headers.get("Cookie")?.split("; ").filter(Boolean);
+    const jwtCookie = cookieArray?.find((cookie) => cookie.startsWith("jwt="));
+
     const data = await req.json();
 
     const res = await fetch(`${process.env.ORDERS_ENDPOINT!}/api/orders`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Cookie: String(cookie),
+        Cookie: String(jwtCookie),
       },
       body: JSON.stringify({
         ticketId: data.id,
@@ -26,6 +28,47 @@ export async function POST(req: NextRequest) {
       message: responseData,
       errors: [],
     });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const cookieArray = req.headers.get("Cookie")?.split("; ").filter(Boolean);
+    const jwtCookie = cookieArray?.find((cookie) => cookie.startsWith("jwt="));
+
+    const { id } = await req.json();
+
+    const res = await fetch(
+      `${process.env.ORDERS_ENDPOINT!}/api/orders/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: String(jwtCookie),
+        },
+      }
+    );
+
+    if (res.ok) {
+      return Response.json({
+        message: "Deleted",
+        errors: [],
+      });
+    }
+
+    const responseData = await res.json();
+
+    return Response.json(
+      {
+        message: "Api Error",
+        errors: responseData.errors,
+      },
+      {
+        status: res.status,
+      }
+    );
   } catch (error) {
     console.log(error);
   }

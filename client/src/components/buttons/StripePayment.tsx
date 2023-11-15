@@ -37,7 +37,7 @@ const StripePayment = ({ expiresAt, userEmail, amount }: Props) => {
         token={(token: Token) => {
           console.log(token);
         }}
-        stripeKey={process.env.STRIPE_PRIVATE_KEY!}
+        stripeKey={process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!}
         amount={amount * 100}
         email={userEmail}
       />

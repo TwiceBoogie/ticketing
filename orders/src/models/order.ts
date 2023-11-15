@@ -18,6 +18,7 @@ interface OrderDoc extends mongoose.Document {
   expiresAt: Date;
   ticket: TicketDoc;
   version: number;
+  createdAt: Date;
 }
 
 interface OrderModel extends mongoose.Model<OrderDoc> {
@@ -43,6 +44,10 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Ticket",
     },
+    createdAt: {
+      type: mongoose.Schema.Types.Date,
+      default: Date.now,
+    },
   },
   {
     toJSON: {
@@ -60,6 +65,13 @@ orderSchema.plugin(updateIfCurrentPlugin);
 orderSchema.statics.build = (attrs: OrderAttrs) => {
   return new Order(attrs);
 };
+
+orderSchema.pre<OrderDoc>("save", function (next) {
+  if (this.isNew && !this.createdAt) {
+    this.createdAt = new Date();
+  }
+  next();
+});
 
 const Order = mongoose.model<OrderDoc, OrderModel>("Order", orderSchema);
 

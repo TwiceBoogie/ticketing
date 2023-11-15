@@ -47,7 +47,7 @@ const ConfirmActionButton = ({
       break;
     case "delete":
       url = "/api/orders";
-      btnTitle = "Delete";
+      btnTitle = "Cancel Order";
       method = "DELETE";
       break;
   }

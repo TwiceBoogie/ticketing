@@ -8,7 +8,10 @@ services:
       - proxy
   auth:
     container_name: auth
-    image: twiceboogie13/auth:latest
+    image: node:alpine
+    volumes:
+      - ./auth:/app
+    working_dir: /app
     ports:
       - "3001:3000"
     environment:
@@ -18,6 +21,7 @@ services:
       - proxy
     depends_on:
       - mongodb
+    command: ["npm", "start"]
   expiration:
     container_name: expiration
     image: twiceboogie13/expiration:latest
@@ -61,7 +65,10 @@ services:
       - proxy
   orders:
     container_name: orders
-    image: twiceboogie13/orders:latest
+    image: node:alpine
+    volumes:
+      - ./orders:/app
+    working_dir: /app
     environment:
       - NATS_CLIENT_ID=orders-first
       - NATS_URL=http://nats:4222
@@ -74,9 +81,13 @@ services:
       - proxy
     depends_on:
       - mongodb
+    command: ["npm", "start"]
   payments:
     container_name: payments
-    image: twiceboogie13/payments:latest
+    image: node:alpine
+    volumes:
+      - ./payments:/app
+    working_dir: /app
     environment:
       - NATS_CLIENT_ID=payments-first
       - NATS_URL=http://nats:4222
@@ -90,9 +101,13 @@ services:
       - proxy
     depends_on:
       - mongodb
+    command: ["npm", "start"]
   tickets:
     container_name: tickets
-    image: twiceboogie13/tickets:latest
+    image: node:alpine
+    volumes:
+      - ./tickets:/app
+    working_dir: /app
     environment:
       - NATS_CLIENT_ID=tickets-first
       - NATS_URL=http://nats:4222
@@ -105,6 +120,7 @@ services:
       - proxy
     depends_on:
       - mongodb
+    command: ["npm", "start"]
   redis:
     image: redis
     container_name: redis-client

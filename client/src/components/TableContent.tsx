@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -14,6 +14,7 @@ import {
   Selection,
   SortDescriptor,
 } from "@nextui-org/table";
+import { Chip, ChipProps } from "@nextui-org/chip";
 import { Input } from "@nextui-org/input";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import { Pagination } from "@nextui-org/pagination";
@@ -35,6 +36,8 @@ import {
   useSortedItems,
 } from "@/core";
 import { SearchIcon } from ".";
+import { getStripe } from "@/core";
+import TimeLeft from "./TimeLeft";
 
 const columnType = [
   [
@@ -57,8 +60,8 @@ const columnType = [
       label: "ACTIONS",
     },
     {
-      key: "ticketId",
-      label: "TICKET-ID",
+      key: "createdAt",
+      label: "CREATED AT",
     },
     {
       key: "title",
@@ -70,7 +73,7 @@ const columnType = [
     },
     {
       key: "expiresAt",
-      label: "EXPIRES AT",
+      label: "EXPIRES IN",
     },
     {
       key: "status",
@@ -78,6 +81,11 @@ const columnType = [
     },
   ],
 ];
+
+const statusColorMap: Record<string, ChipProps["color"]> = {
+  cancelled: "danger",
+  created: "success",
+};
 
 type Columns = {
   key: string;
@@ -137,6 +145,27 @@ const TableContent = <T extends Data[]>({
         setRefresh(false);
         router.refresh();
       }, 2000);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSubmit = async (id: string) => {
+    try {
+      const stripe = await getStripe();
+      const res = await fetch("/api/checkout_sessions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      });
+      const { session } = await res.json();
+
+      const result = await stripe?.redirectToCheckout({
+        sessionId: session.id,
+      });
+      console.log(result, "result");
     } catch (error) {
       console.log(error);
     }
@@ -251,6 +280,10 @@ const TableContent = <T extends Data[]>({
       switch (ColumnKey) {
         case "id":
           if (type !== "tickets") {
+            const { ticketId, status } = item as TransformOrder;
+            if (status === "cancelled") {
+              return "none";
+            }
             return (
               <Dropdown key={cellValue}>
                 <DropdownTrigger>
@@ -262,8 +295,7 @@ const TableContent = <T extends Data[]>({
                 >
                   <DropdownItem
                     key={`proceed-${cellValue}`}
-                    as={Link}
-                    href={`/orders/payment/${cellValue}`}
+                    onPress={() => handleSubmit(ticketId)}
                   >
                     Proceed to Checkout
                   </DropdownItem>
@@ -271,9 +303,10 @@ const TableContent = <T extends Data[]>({
                     key={`delete--${cellValue}`}
                     className="text-danger"
                     color="danger"
+                    as={Link}
                     href={`/orders/delete/${cellValue}`}
                   >
-                    Delete Order
+                    Cancel Order
                   </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
@@ -282,12 +315,15 @@ const TableContent = <T extends Data[]>({
             const ticket = item as Ticket;
             let href = "";
             let title = "";
+
             if (ticket.userId === userId) {
               href = `/tickets/update/${cellValue}`;
               title = "Update Ticket";
-            } else {
+            } else if (userId) {
               href = `/tickets/order/${cellValue}`;
               title = "Add to Cart";
+            } else {
+              return <p>You must be signed in</p>;
             }
             return (
               <Button key={cellValue} as={Link} href={href}>
@@ -295,6 +331,35 @@ const TableContent = <T extends Data[]>({
               </Button>
             );
           }
+        case "createdAt":
+          const formattedTime = new Date(cellValue).toLocaleString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+            timeZoneName: "short",
+          });
+          return formattedTime;
+        case "status":
+          return (
+            <Chip
+              className="capitalize border-none gap-1 text-default-600"
+              color={
+                statusColorMap[
+                  cellValue === "cancelled" ? "cancelled" : "created"
+                ]
+              }
+            >
+              {cellValue}
+            </Chip>
+          );
+        case "expiresAt":
+          const order = item as TransformOrder;
+
+          return <TimeLeft expiresAt={order.expiresAt} />;
         default:
           return cellValue;
       }
@@ -325,7 +390,7 @@ const TableContent = <T extends Data[]>({
       >
         <TableHeader columns={columns}>
           {(column) => (
-            <TableColumn key={column.key} align="end">
+            <TableColumn key={column.key} align="center">
               {column.label}
             </TableColumn>
           )}
