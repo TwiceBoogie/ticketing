@@ -24,7 +24,10 @@ services:
     command: ["npm", "start"]
   expiration:
     container_name: expiration
-    image: twiceboogie13/expiration:latest
+    image: node:alpine
+    volumes:
+      - ./expiration:/app
+    working_dir: /app
     environment:
       - NATS_CLIENT_ID=expiration-first
       - NATS_URL=http://nats:4222
@@ -34,6 +37,7 @@ services:
       - proxy
     depends_on:
       - expiration-redis
+    command: ["npm", "start"]
   expiration-redis:
     container_name: expiration-redis
     image: redis
@@ -75,6 +79,7 @@ services:
       - NATS_CLUSTER_ID=ticketing
       - MONGO_URI=mongodb://mongodb:27017/orders
       - JWT_KEY=Random_Key_of_your_choice
+      - WEBHOOK_KEY=
     ports:
       - "3002:3000"
     networks:
@@ -94,7 +99,8 @@ services:
       - NATS_CLUSTER_ID=ticketing
       - MONGO_URI=mongodb://mongodb:27017/payments
       - JWT_KEY=Random_Key_of_your_choice
-      - STRIPE_KEY=<Your Stripe Key>
+      - STRIPE_KEY=
+      - WEBHOOK_KEY=
     ports:
       - "3003:3000"
     networks:

@@ -13,7 +13,6 @@ export class OrderCreatedListener extends Listener<OrderCreatedEvent> {
       price: data.ticket.price,
       status: data.status,
       userId: data.userId,
-      userEmail: data.userEmail,
       version: data.version,
     });
     await order.save();

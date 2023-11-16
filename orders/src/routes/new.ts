@@ -11,6 +11,7 @@ import { body } from "express-validator";
 import { Ticket } from "../models/ticket";
 import { Order } from "../models/order";
 import { OrderCreatedPublisher } from "../events/publishers/order-created-publisher";
+import { stripe } from "../stripe";
 import { natsWrapper } from "../nats-wrapper";
 
 const router = express.Router();
@@ -59,13 +60,31 @@ router.post(
     });
     await order.save();
 
+    // build a product and checkout session per order (stripe)
+    const product = await stripe.products.create({
+      name: ticket.title,
+      default_price_data: {
+        unit_amount: ticket.price * 100,
+        currency: "usd",
+      },
+    });
+    const checkoutSession = await stripe.checkout.sessions.create({
+      mode: "payment",
+      line_items: [{ price: product.default_price as string }],
+      success_url: `http://localhost:3000/checkout/?success=true`,
+      cancel_url: `http://localhost:3000/checkout/?canceled=true`,
+      metadata: {
+        orderId: order.id,
+      },
+    });
+
     // Publish an event saying that an order was created
     new OrderCreatedPublisher(natsWrapper.client).publish({
       id: order.id,
       version: order.version,
       status: order.status,
       userId: order.userId,
-      userEmail: req.currentUser?.email as string,
+      sessionId: checkoutSession.id,
       expiresAt: order.expiresAt.toISOString(),
       ticket: {
         id: ticket.id,
@@ -73,7 +92,7 @@ router.post(
       },
     });
 
-    res.status(201).send(order);
+    res.status(201).send(checkoutSession);
   }
 );
 

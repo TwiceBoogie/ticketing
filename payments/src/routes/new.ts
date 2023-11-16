@@ -20,9 +20,6 @@ const endpointSecret = process.env.WEBHOOK_KEY!;
 router.post(
   "/api/webhook",
   express.raw({ type: "application/json" }),
-  // requireAuth,
-  // [body("token").not().isEmpty(), body("orderId").not().isEmpty()],
-  // validateRequest,
   async (req: Request, res: Response) => {
     const sig = req.headers["stripe-signature"];
 
@@ -41,64 +38,69 @@ router.post(
 
     // Handle the event
     switch (event.type) {
-      case "checkout.session.async_payment_failed":
-        const checkoutSessionAsyncPaymentFailed = event.data.object;
-        console.log(checkoutSessionAsyncPaymentFailed);
-        // Then define and call a function to handle the event checkout.session.async_payment_failed
-        break;
-      case "checkout.session.async_payment_succeeded":
-        const checkoutSessionAsyncPaymentSucceeded = event.data.object;
-        console.log(checkoutSessionAsyncPaymentSucceeded);
-        // Then define and call a function to handle the event checkout.session.async_payment_succeeded
-        break;
       case "checkout.session.completed":
         const checkoutSessionCompleted = event.data.object;
-        console.log(checkoutSessionCompleted);
+        console.log(checkoutSessionCompleted, 3);
         // Then define and call a function to handle the event checkout.session.completed
+        if (checkoutSessionCompleted.metadata) {
+          const order = await Order.findById(
+            checkoutSessionCompleted.metadata.orderId
+          );
+          const payment = Payment.build({
+            orderId: order?.id,
+            stripeId: checkoutSessionCompleted.id,
+          });
+          await payment.save();
+          new PaymentCreatedPublisher(natsWrapper.client).publish({
+            id: payment.id,
+            orderId: payment.orderId,
+            stripeId: payment.stripeId,
+          });
+        }
         break;
       case "checkout.session.expired":
         const checkoutSessionExpired = event.data.object;
-        console.log(checkoutSessionExpired);
+        console.log(checkoutSessionExpired, 4);
         // Then define and call a function to handle the event checkout.session.expired
         break;
       case "payment_intent.amount_capturable_updated":
         const paymentIntentAmountCapturableUpdated = event.data.object;
-        console.log(paymentIntentAmountCapturableUpdated);
+        console.log(paymentIntentAmountCapturableUpdated, 5);
         // Then define and call a function to handle the event payment_intent.amount_capturable_updated
         break;
       case "payment_intent.canceled":
         const paymentIntentCanceled = event.data.object;
-        console.log(paymentIntentCanceled);
+        console.log(paymentIntentCanceled, 6);
         // Then define and call a function to handle the event payment_intent.canceled
         break;
       case "payment_intent.created":
         const paymentIntentCreated = event.data.object;
-        console.log(paymentIntentCreated);
+        console.log(paymentIntentCreated, 7);
         // Then define and call a function to handle the event payment_intent.created
         break;
       case "payment_intent.partially_funded":
         const paymentIntentPartiallyFunded = event.data.object;
-        console.log(paymentIntentPartiallyFunded);
+        console.log(paymentIntentPartiallyFunded, 8);
         // Then define and call a function to handle the event payment_intent.partially_funded
         break;
       case "payment_intent.payment_failed":
         const paymentIntentPaymentFailed = event.data.object;
-        console.log(paymentIntentPaymentFailed);
+        console.log(paymentIntentPaymentFailed, 9);
         // Then define and call a function to handle the event payment_intent.payment_failed
         break;
       case "payment_intent.processing":
         const paymentIntentProcessing = event.data.object;
-        console.log(paymentIntentProcessing);
+        console.log(paymentIntentProcessing, 10);
         // Then define and call a function to handle the event payment_intent.processing
         break;
       case "payment_intent.requires_action":
         const paymentIntentRequiresAction = event.data.object;
-        console.log(paymentIntentRequiresAction);
+        console.log(paymentIntentRequiresAction, 11);
         // Then define and call a function to handle the event payment_intent.requires_action
         break;
       case "payment_intent.succeeded":
         const paymentIntentSucceeded = event.data.object;
-        console.log(paymentIntentSucceeded);
+        console.log(paymentIntentSucceeded, 12);
         // Then define and call a function to handle the event payment_intent.succeeded
         break;
       // ... handle other event types

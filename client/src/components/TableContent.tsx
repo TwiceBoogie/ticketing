@@ -160,12 +160,13 @@ const TableContent = <T extends Data[]>({
         },
         body: JSON.stringify({ id }),
       });
-      const { session } = await res.json();
+      const order = await res.json();
+      console.log(order);
 
-      const result = await stripe?.redirectToCheckout({
-        sessionId: session.id,
-      });
-      console.log(result, "result");
+      // const result = await stripe?.redirectToCheckout({
+      //   sessionId: session.id,
+      // });
+      // console.log(result, "result");
     } catch (error) {
       console.log(error);
     }

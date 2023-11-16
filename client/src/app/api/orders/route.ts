@@ -1,5 +1,8 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
+import { createRedisInstance } from "@/core/config";
+
+const redis = createRedisInstance();
 
 export async function POST(req: Request) {
   try {
@@ -21,12 +24,12 @@ export async function POST(req: Request) {
     const responseData = await res.json();
 
     revalidatePath("/");
-    revalidateTag("tickets");
+
+    console.log(responseData);
+    redis.set(`user:${jwtCookie}`, responseData.id);
 
     return Response.json({
-      status: res.status,
-      message: responseData,
-      errors: [],
+      message: "great",
     });
   } catch (error) {
     console.log(error);

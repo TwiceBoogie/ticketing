@@ -1,0 +1,56 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ingress-service
+  namespace: default
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`rancher.twiceb.dev`) && PathPrefix(`/api/payments`)
+      kind: Rule
+      services:
+        - name: payments-srv
+          port: 3000
+      middlewares:
+        - name: forward-headers
+    - match: Host(`rancher.twiceb.dev`) && PathPrefix(`/api/users`)
+      kind: Rule
+      services:
+        - name: auth-srv
+          port: 3000
+      middlewares:
+        - name: forward-headers
+    - match: Host(`rancher.twiceb.dev`) && PathPrefix(`/api/tickets`)
+      kind: Rule
+      services:
+        - name: tickets-srv
+          port: 3000
+      middlewares:
+        - name: forward-headers
+    - match: Host(`rancher.twiceb.dev`) && PathPrefix(`/api/orders`)
+      kind: Rule
+      services:
+        - name: orders-srv
+          port: 3000
+      middlewares:
+        - name: forward-headers
+    - match: Host(`rancher.twiceb.dev`)
+      kind: Rule
+      services:
+        - name: client-srv
+          port: 3000
+      middlewares:
+        - name: forward-headers
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: forward-headers
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-For: "{{.RemoteAddress}}"
+      X-Forwarded-Host: "{{.Host}}"
+      X-Forwarded-Proto: "https"
