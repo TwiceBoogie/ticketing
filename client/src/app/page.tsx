@@ -41,7 +41,7 @@ async function getOrders(jwt: RequestCookie | undefined) {
     if (jwt === undefined) {
       return [{ error: "not authorized" }];
     }
-
+    console.log(jwt);
     const res = await fetch(`${process.env.ORDERS_ENDPOINT!}/api/orders`, {
       method: "GET",
       headers: {
@@ -51,6 +51,7 @@ async function getOrders(jwt: RequestCookie | undefined) {
     });
     const responseData = await res.json();
     console.log("fetching orders");
+    console.log(responseData);
 
     if (!res.ok) {
       return [{ error: "not authorized" }];

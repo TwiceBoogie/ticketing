@@ -37,6 +37,7 @@ export async function POST(req: Request) {
 
     if (jwtMatch && jwtMatch[1]) {
       const jwt = jwtMatch[1].split(";")[0];
+      console.log(jwt);
       redis.set(jwt, responseData.id);
     } else {
       console.log("JWT not found in the cookie string");

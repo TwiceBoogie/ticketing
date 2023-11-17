@@ -99,8 +99,8 @@ services:
       - NATS_CLUSTER_ID=ticketing
       - MONGO_URI=mongodb://mongodb:27017/payments
       - JWT_KEY=Random_Key_of_your_choice
-      - STRIPE_KEY=sk_test_51MEL0AGD9cK9NzsOAgqPPgZLdLXVfgHDYI1mkS7CpR2ODgUbXXMx7mq9qhgSx7D7OBHRAJ7mlfyBlBqcn0tBoTds008P6wpQ7P
-      - WEBHOOK_KEY=whsec_c13d0946bc88631d98bdbaa4ddf97a4cc2c07c8af4109751c9cfe0b7d8997544
+      - STRIPE_KEY=
+      - WEBHOOK_KEY=
     ports:
       - "3003:3000"
     networks:
