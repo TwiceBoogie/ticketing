@@ -80,6 +80,7 @@ services:
       - MONGO_URI=mongodb://mongodb:27017/orders
       - JWT_KEY=Random_Key_of_your_choice
       - WEBHOOK_KEY=
+      - STRIPE_KEY=
     ports:
       - "3002:3000"
     networks:

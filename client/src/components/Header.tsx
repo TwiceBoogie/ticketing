@@ -31,13 +31,16 @@ interface CurrentUserI {
 async function getCurrentUser() {
   try {
     const jwt = cookies().get("jwt");
-    const res = await fetch("http://localhost:3001/api/users/currentuser", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: `jwt=${jwt?.value}`,
-      },
-    });
+    const res = await fetch(
+      `${process.env.AUTH_ENDPOINT!}/api/users/currentuser`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `jwt=${jwt?.value}`,
+        },
+      }
+    );
     const responseData: CurrentUserI = await res.json();
     return responseData;
   } catch (error) {

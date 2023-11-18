@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 import { Order, TransformOrder, transformOrder } from "@/core";
 import { createRedisInstance } from "@/core/config";
 
@@ -8,9 +8,15 @@ import TableContent from "@/components/TableContent";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import Loading from "./loading";
 
-type OrdersResponse = Order[] | NotAuthorized[];
 type NotAuthorized = {
   error: string;
+};
+type OrdersResponse = Order[] | NotAuthorized[];
+
+type UserData = {
+  userId: string;
+  userEmail: string;
+  jwtExpires: string;
 };
 
 const redis = createRedisInstance();
@@ -41,24 +47,23 @@ async function getOrders(jwt: RequestCookie | undefined) {
     if (jwt === undefined) {
       return [{ error: "not authorized" }];
     }
-    console.log(jwt);
     const res = await fetch(`${process.env.ORDERS_ENDPOINT!}/api/orders`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Cookie: `jwt=${jwt?.value}`,
+        Cookie: `jwt=${jwt.value}`,
       },
     });
-    const responseData = await res.json();
+    const responseData: Order[] = await res.json();
     console.log("fetching orders");
-    console.log(responseData);
 
     if (!res.ok) {
       return [{ error: "not authorized" }];
     }
     return responseData;
   } catch (error) {
-    console.log(error, "error from getOrders()");
+    console.log(error);
+    return [{ error: "An Error has occured" }];
   }
 }
 
@@ -72,9 +77,11 @@ function isOrder(data: OrdersResponse) {
 export default async function Home() {
   const tickets: Ticket[] = await getTickets();
   const jwt = cookies().get("jwt");
-  let userId: string | null = "";
+
+  let userData = {} as UserData;
   if (jwt?.value !== undefined) {
-    userId = (await redis.get(jwt.value)) as string;
+    const serializedUserData = await redis.get(`user:${jwt.value}`);
+    userData = JSON.parse(serializedUserData as string);
   }
 
   const ordersResponse: OrdersResponse = await getOrders(jwt);
@@ -96,7 +103,11 @@ export default async function Home() {
           Available Tickets
         </h1>
         <Suspense fallback={<Loading />}>
-          <TableContent data={tickets} type="tickets" userId={userId} />
+          <TableContent
+            data={tickets}
+            type="tickets"
+            userId={userData.userId}
+          />
         </Suspense>
       </div>
       {loggedIn && (
@@ -107,7 +118,7 @@ export default async function Home() {
               <TableContent
                 data={transformOrders}
                 type="orders"
-                userId={userId}
+                userId={userData.userId}
               />
             </Suspense>
           </>

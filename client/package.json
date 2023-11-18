@@ -20,7 +20,6 @@
     "next": "^14.0.2",
     "react": "^18",
     "react-dom": "^18",
-    "react-stripe-checkout": "^2.6.3",
     "stripe": "^14.4.0"
   },
   "devDependencies": {

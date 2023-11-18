@@ -1,15 +1,16 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 import { createRedisInstance } from "@/core/config";
+import { NextRequest } from "next/server";
 
 const redis = createRedisInstance();
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const cookieArray = req.headers.get("Cookie")?.split("; ").filter(Boolean);
     const jwtCookie = cookieArray?.find((cookie) => cookie.startsWith("jwt="));
 
-    const data = await req.json();
+    const { id } = await req.json();
 
     const res = await fetch(`${process.env.ORDERS_ENDPOINT!}/api/orders`, {
       method: "POST",
@@ -18,15 +19,14 @@ export async function POST(req: Request) {
         Cookie: String(jwtCookie),
       },
       body: JSON.stringify({
-        ticketId: data.id,
+        ticketId: id,
       }),
     });
     const responseData = await res.json();
 
     revalidatePath("/");
 
-    console.log(responseData);
-    redis.set(`user:${jwtCookie}`, responseData.id);
+    await redis.set(`sessionId:${jwtCookie}`, responseData.id);
 
     return Response.json({
       message: "great",

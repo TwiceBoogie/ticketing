@@ -22,7 +22,6 @@ interface CurrentUserI {
 }
 
 interface SignupRes {
-  status: number;
   message: {
     id: string;
     email: string;
@@ -47,7 +46,7 @@ const SignButton = ({ url, title }: Props) => {
   const [invalidP, setInvalidP] = useState(false);
   const [error, setError] = useState("");
 
-  const onSubmit = async () => {
+  const onSubmit = async (onClose: () => void) => {
     setError("");
     if (!email) {
       setInvalidE(true);
@@ -74,15 +73,17 @@ const SignButton = ({ url, title }: Props) => {
         if (!res.ok) {
           data.errors.map((error) => {
             if (Object.keys(error).length === 1) {
+              console.log(error.message);
               setError(error.message);
             } else {
               if (error.field === "email") setInvalidE(true);
               if (error.field === "password") setInvalidP(true);
             }
           });
+        } else {
+          onClose();
+          router.refresh();
         }
-
-        router.refresh();
       } catch (error) {
         console.log(error);
       }
@@ -154,8 +155,7 @@ const SignButton = ({ url, title }: Props) => {
                 <Button
                   color="primary"
                   onPress={() => {
-                    onSubmit();
-                    onClose();
+                    onSubmit(onClose);
                   }}
                 >
                   {title}

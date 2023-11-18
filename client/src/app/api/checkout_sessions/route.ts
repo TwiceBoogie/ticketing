@@ -7,8 +7,9 @@ export async function POST(req: Request) {
     const cookieArray = req.headers.get("Cookie")?.split("; ").filter(Boolean);
     const jwtCookie = cookieArray?.find((cookie) => cookie.startsWith("jwt="));
 
-    const order = redis.get(`user:${jwtCookie}`);
-    return Response.json({ order });
+    const order = await redis.get(`sessionId:${jwtCookie}`);
+    console.log(order);
+    return Response.json(order);
   } catch (error) {
     console.log(error);
   }

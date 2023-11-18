@@ -26,6 +26,7 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
     }
 
     const session = await stripe.checkout.sessions.expire(data.sessionId);
+    console.log(order, "listening for stuff");
 
     order.set({
       status: OrderStatus.Cancelled,

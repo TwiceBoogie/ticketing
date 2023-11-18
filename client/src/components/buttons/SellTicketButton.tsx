@@ -10,6 +10,7 @@ import {
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface SellTickets {
   status: number;
@@ -21,6 +22,7 @@ interface SellTickets {
 }
 
 const SellTicketButton = () => {
+  const router = useRouter();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
@@ -55,10 +57,10 @@ const SellTicketButton = () => {
             setSuccess(false);
             setTitle("");
             setPrice("");
+            router.refresh();
             onClose();
           }, 3000);
-        }
-        if (data.status !== 201) {
+        } else {
           data.errors.map((error) => {
             if (Object.keys(error).length === 1) {
               setError(error.message);
@@ -69,7 +71,6 @@ const SellTicketButton = () => {
           });
         }
       } catch (error) {
-        console.log(error);
         setError("Server error has occured. Please try again later");
       }
     }

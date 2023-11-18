@@ -15,13 +15,15 @@ export async function POST(req: Request) {
     });
     const responseData = await res.json();
 
-    if (!res.ok) {
+    if (!res.ok || responseData.errors) {
       // If there's an error, keep the original response body structure
-      return Response.json({
-        status: res.status,
-        message: "Api Error",
-        errors: responseData.errors,
-      });
+      return Response.json(
+        {
+          message: "Api Error",
+          errors: responseData.errors,
+        },
+        { status: res.status }
+      );
     }
 
     // If the response is successful, create a new response with the same body structure
@@ -34,23 +36,28 @@ export async function POST(req: Request) {
     }
 
     const jwtMatch = setCookieHeader.match(/jwt=(.+)/);
+    const jwtExpires = setCookieHeader.match(/expires=(.+)/);
 
-    if (jwtMatch && jwtMatch[1]) {
+    if (jwtMatch && jwtMatch[1] && jwtExpires) {
       const jwt = jwtMatch[1].split(";")[0];
-      console.log(jwt);
-      redis.set(jwt, responseData.id);
+      const expires = jwtExpires[1].split(";")[0];
+      const userData = {
+        userId: responseData.id,
+        userEmail: responseData.email,
+        jwtExpires: expires,
+      };
+      await redis.set(`user:${jwt}`, JSON.stringify(userData));
     } else {
       console.log("JWT not found in the cookie string");
     }
 
     revalidatePath("/");
 
-    return new Response(
-      JSON.stringify({
-        status: res.status,
+    return Response.json(
+      {
         message: responseData,
         errors: [],
-      }),
+      },
       {
         headers: newHeaders,
         status: res.status,

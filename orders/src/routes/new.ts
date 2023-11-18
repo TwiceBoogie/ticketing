@@ -70,7 +70,7 @@ router.post(
     });
     const checkoutSession = await stripe.checkout.sessions.create({
       mode: "payment",
-      line_items: [{ price: product.default_price as string }],
+      line_items: [{ price: product.default_price as string, quantity: 1 }],
       success_url: `http://localhost:3000/checkout/?success=true`,
       cancel_url: `http://localhost:3000/checkout/?canceled=true`,
       metadata: {

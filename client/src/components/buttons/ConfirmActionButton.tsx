@@ -67,6 +67,7 @@ const ConfirmActionButton = ({
 
   useEffect(() => {
     if (!isEmpty) {
+      console.log(id, method, url);
       const fetchData = async () => {
         try {
           const res = await fetch(url, {

@@ -10,7 +10,6 @@ import {
   ModalFooter,
 } from "@nextui-org/modal";
 import { Button } from "@nextui-org/button";
-import StripePayment from "./buttons/StripePayment";
 import { Input } from "@nextui-org/react";
 import ConfirmActionButton from "./buttons/ConfirmActionButton";
 interface Props {

@@ -1,13 +1,5 @@
 import express, { Request, Response } from "express";
-import { body } from "express-validator";
-import {
-  requireAuth,
-  validateRequest,
-  BadRequestError,
-  NotAuthorizedError,
-  NotFoundError,
-  OrderStatus,
-} from "@twicetickets/common";
+
 import { stripe } from "../stripe";
 import { Order } from "../models/order";
 import { Payment } from "../models/payment";
@@ -24,7 +16,7 @@ router.post(
     const sig = req.headers["stripe-signature"];
 
     if (!sig) {
-      return res.redirect("http://localhost:3000/");
+      return res.redirect(`${process.env.REDIRECT_USER!}`);
     }
 
     let event;

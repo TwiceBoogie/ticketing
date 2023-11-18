@@ -15,18 +15,22 @@ export async function POST(req: Request) {
     });
     const responseData = await res.json();
     if (!res.ok) {
-      return Response.json({
-        status: res.status,
-        message: res.status === 401 ? "Not authorized" : "Server error",
-        errors: responseData.errors,
-      });
+      return Response.json(
+        {
+          message: res.status === 401 ? "Not authorized" : "Server error",
+          errors: responseData.errors,
+        },
+        { status: res.status }
+      );
     }
     revalidateTag("tickets");
-    return Response.json({
-      status: res.status,
-      message: "Successfully created a ticket",
-      errors: [],
-    });
+    return Response.json(
+      {
+        message: "Successfully created a ticket",
+        errors: [],
+      },
+      { status: res.status }
+    );
   } catch (error) {
     console.log(error);
   }
@@ -36,7 +40,6 @@ export async function PUT(req: Request) {
   try {
     const cookie = req.headers.get("Cookie");
     const body = await req.json();
-    const itemId = body.id;
 
     const res = await fetch(
       `${process.env.TICKETS_ENDPOINT!}/api/tickets/${body.id}`,
@@ -53,7 +56,6 @@ export async function PUT(req: Request) {
       }
     );
     const responseData = await res.json();
-    console.log(responseData);
     revalidateTag("tickets");
     return Response.json({ message: "api endpoint hit" });
   } catch (error) {

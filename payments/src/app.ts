@@ -1,7 +1,5 @@
 import express from "express";
 import "express-async-errors";
-import { json } from "body-parser";
-import cookieSession from "cookie-session";
 
 import { errorHandler } from "@twicetickets/common";
 import { createChargeRouter } from "./routes/new";
@@ -17,7 +15,7 @@ app.use((req, res, next) => {
 app.use(createChargeRouter);
 
 app.all("*", async (req, res) => {
-  res.redirect("http://localhost:3000");
+  res.redirect(`${process.env.REDIRECT_USER!}`);
 });
 
 app.use(errorHandler);
