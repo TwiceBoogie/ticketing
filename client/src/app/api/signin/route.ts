@@ -6,6 +6,7 @@ const redis = createRedisInstance();
 export async function POST(req: Request) {
   try {
     const data = await req.json();
+    
     const res = await fetch(`${process.env.AUTH_ENDPOINT!}/api/users/signin`, {
       method: "POST",
       headers: {

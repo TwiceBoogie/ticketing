@@ -1,14 +1,24 @@
 /** @type {import('next').NextConfig} */
 
-const withBundleAnalyzer = require("@next/bundle-analyzer")({
-  enabled: process.env.ANALYZE === "true",
-});
+// const withBundleAnalyzer = require("@next/bundle-analyzer")({
+//   enabled: process.env.ANALYZE === "true",
+// });
 
 const nextConfig = {
   logging: {
     fetches: {
       fullUrl: true,
     },
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        port: "",
+        pathname: "/photo-1617195737496-bc30194e3a19/**",
+      },
+    ],
   },
   // async headers() {
   //   return [
@@ -26,4 +36,4 @@ const nextConfig = {
   // },
 };
 
-module.exports = withBundleAnalyzer(nextConfig);
+module.exports = nextConfig;

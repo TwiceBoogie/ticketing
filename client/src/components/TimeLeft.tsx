@@ -1,10 +1,12 @@
+"use client";
+
 import { useEffect, useState } from "react";
 
 interface Props {
   expiresAt: string;
 }
 
-const TimeLeft = ({ expiresAt }: Props) => {
+export const TimeLeft = ({ expiresAt }: Props) => {
   const [timeLeft, setTimeLeft] = useState(0);
 
   useEffect(() => {
@@ -39,4 +41,3 @@ const TimeLeft = ({ expiresAt }: Props) => {
   );
 };
 
-export default TimeLeft;

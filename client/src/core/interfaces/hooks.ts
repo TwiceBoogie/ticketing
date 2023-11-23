@@ -1,6 +1,14 @@
-import type { Dispatch, SetStateAction } from "react";
+import type { Dispatch, Key, SetStateAction } from "react";
 import { Order, Ticket } from ".";
-import { Selection, SortDescriptor } from "@nextui-org/table";
+
+export interface SortDescriptor {
+  /** The key of the column to sort by. */
+  column?: Key,
+  /** The direction to sort by. */
+  direction?: SortDirection
+}
+
+export type SortDirection = 'ascending' | 'descending';
 
 type Items = Order[] | Ticket[];
 

@@ -1,189 +1,127 @@
-"use client";
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  useDisclosure,
-} from "@nextui-org/modal";
-import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/input";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-
-interface SellTickets {
-  status: number;
-  message: string;
-  errors: {
-    message: string;
-    field?: string;
-  }[];
-}
+import { Fragment, useRef, useState } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+import { SpinnerIcon } from "../icons";
 
 const SellTicketButton = () => {
-  const router = useRouter();
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [title, setTitle] = useState("");
-  const [price, setPrice] = useState("");
+  const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [invalidT, setInvalidT] = useState(false);
   const [invalidP, setInvalidP] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState("");
 
-  const handleSubmit = async (onClose: () => void) => {
-    setError("");
-    if (!title) {
-      setInvalidT(true);
-    } else if (!price || parseFloat(price) <= 0) {
-      setInvalidP(true);
-    } else {
-      try {
-        const res = await fetch("/api/tickets", {
-          method: "post",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            title,
-            price,
-          }),
-        });
-
-        const data: SellTickets = await res.json();
-        if (res.ok) {
-          setSuccess(true);
-          setTimeout(() => {
-            setSuccess(false);
-            setTitle("");
-            setPrice("");
-            router.refresh();
-            onClose();
-          }, 3000);
-        } else {
-          data.errors.map((error) => {
-            if (Object.keys(error).length === 1) {
-              setError(error.message);
-            } else {
-              if (error.field === "title") setInvalidT(true);
-              if (error.field === "price") setInvalidP(true);
-            }
-          });
-        }
-      } catch (error) {
-        setError("Server error has occured. Please try again later");
-      }
-    }
-  };
-
+  const cancelButtonRef = useRef(null);
   return (
     <>
-      <Button
-        color="primary"
-        onPress={() => {
-          setTitle("");
-          setPrice("");
-          onOpen();
-        }}
+      <button
+        className="inline-block shrink-0 rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500 dark:hover:bg-blue-700 dark:hover:text-white"
+        onClick={() => setOpen(true)}
       >
         Sell Tickets
-      </Button>
-      <Modal
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        placement="top-center"
-        className="dark:text-white"
-      >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                Create New Ticket
-              </ModalHeader>
-              {success && (
-                <div
-                  className="flex items-center p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400"
-                  role="alert"
-                >
-                  <svg
-                    className="flex-shrink-0 inline w-4 h-4 mr-3"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
-                  </svg>
-                  <span className="sr-only">Info</span>
-                  <div>
-                    <span className="font-medium">Success alert!</span>{" "}
-                    Successfully created a new ticket
+      </button>
+      <Transition.Root show={open} as={Fragment}>
+        <Dialog
+          as="div"
+          className="relative z-10"
+          initialFocus={cancelButtonRef}
+          onClose={setOpen}
+        >
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-gray-700 bg-opacity-75 transition-opacity" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                enterTo="opacity-100 translate-y-0 sm:scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              >
+                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                  <div className="bg-white dark:bg-slate-800 px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                    <div className="sm:flex sm:items-start">
+                      <div className="w-full mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                        <Dialog.Title
+                          as="h3"
+                          className="text-xl font-semibold leading-6 text-gray-900 dark:text-white"
+                        >
+                          Create a new ticket
+                        </Dialog.Title>
+                        <form className="my-4 grid grid-cols-6 gap-6">
+                          <div className="col-span-6">
+                            <label
+                              htmlFor="Title"
+                              className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+                            >
+                              Title
+                            </label>
+                            <input
+                              type="text"
+                              id="Title"
+                              name="title"
+                              className={`mt-1 w-full rounded-md ${
+                                invalidT
+                                  ? "border-red-500 dark:border-red-500"
+                                  : "border-gray-200 dark:border-gray-700"
+                              } bg-white text-sm text-gray-700 shadow-sm dark:bg-gray-800 dark:text-gray-200 `}
+                            />
+                          </div>
+
+                          <div className="col-span-6">
+                            <label
+                              htmlFor="Price"
+                              className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+                            >
+                              Price
+                            </label>
+                            <input
+                              type="number"
+                              id="Price"
+                              name="price"
+                              className={`mt-1 w-full rounded-md ${
+                                invalidP
+                                  ? "border-red-500 dark:border-red-500"
+                                  : "border-gray-200 dark:border-gray-700"
+                              } bg-white text-sm text-gray-700 shadow-sm dark:bg-gray-800 dark:text-gray-200 `}
+                            />
+                          </div>
+                        </form>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              )}
-              <ModalBody>
-                {error && (
-                  <div
-                    className="flex items-center p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800"
-                    role="alert"
-                  >
-                    <svg
-                      className="flex-shrink-0 inline w-4 h-4 mr-3"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
+                  <div className="bg-white dark:bg-slate-800 px-4 py-3 sm:flex sm:flex-row-reverse gap-2 sm:px-6">
+                    <button
+                      type="button"
+                      className="shrink-0 rounded-md border border-blue-600 bg-blue-600 px-12 py-3 text-sm font-medium text-white transition hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500 dark:hover:bg-blue-700 dark:hover:text-white"
+                      onClick={() => setOpen(false)}
+                      ref={cancelButtonRef}
                     >
-                      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
-                    </svg>
-                    <span className="sr-only">Info</span>
-                    <div>{error}</div>
+                      {isLoading ? <SpinnerIcon /> : "Create new Ticket"}
+                    </button>
+                    <button
+                      type="button"
+                      className="shrink-0 rounded-md border border-gray-600 bg-gray-600 px-12 py-3 text-sm font-medium text-white transition hover:bg-transparent hover:text-gray-600 focus:outline-none focus:ring active:text-gray-500 dark:hover:bg-gray-700 dark:hover:text-white"
+                      onClick={() => setOpen(false)}
+                    >
+                      Deactivate
+                    </button>
                   </div>
-                )}
-                <Input
-                  autoFocus
-                  label="Title"
-                  placeholder="Enter your ticket title"
-                  variant="bordered"
-                  value={title}
-                  onChange={(e) => {
-                    setInvalidT(false);
-                    setTitle(e.target.value);
-                  }}
-                  isInvalid={invalidT}
-                  errorMessage={invalidT && "Title is required"}
-                />
-                <Input
-                  label="Price"
-                  placeholder="Enter your ticket price"
-                  type="number"
-                  variant="bordered"
-                  value={price}
-                  onChange={(e) => {
-                    setInvalidP(false);
-                    setPrice(e.target.value);
-                  }}
-                  isInvalid={invalidP}
-                  errorMessage={invalidP && "Please enter a valid number"}
-                />
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="flat" onPress={onClose}>
-                  Close
-                </Button>
-                <Button
-                  color="primary"
-                  onPress={() => {
-                    handleSubmit(onClose);
-                  }}
-                >
-                  Sell
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition.Root>
     </>
   );
 };

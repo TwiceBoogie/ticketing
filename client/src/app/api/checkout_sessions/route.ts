@@ -7,8 +7,9 @@ export async function POST(req: Request) {
     const cookieArray = req.headers.get("Cookie")?.split("; ").filter(Boolean);
     const jwtCookie = cookieArray?.find((cookie) => cookie.startsWith("jwt="));
 
-    const order = await redis.get(`sessionId:${jwtCookie}`);
-    console.log(order);
+    const serializedData = await redis.get(`sessionId:${jwtCookie}`);
+    const order = JSON.parse(serializedData as string);
+    console.log(order, '/api/checkout_sessions');
     return Response.json(order);
   } catch (error) {
     console.log(error);

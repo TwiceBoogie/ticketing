@@ -5,6 +5,17 @@ import { NextRequest } from "next/server";
 
 const redis = createRedisInstance();
 
+type ErrorResponse = {
+  errors: {
+    message: string
+  }
+}
+type NewOrderResponse = {
+  sessionId: string;
+}
+
+
+
 export async function POST(req: NextRequest) {
   try {
     const cookieArray = req.headers.get("Cookie")?.split("; ").filter(Boolean);
@@ -23,10 +34,17 @@ export async function POST(req: NextRequest) {
       }),
     });
     const responseData = await res.json();
+    console.log(responseData, "client /api/orders");
+
+    if (!res.ok) {
+      return Response.json({
+        errors: "error on server"
+      })
+    }
 
     revalidatePath("/");
 
-    await redis.set(`sessionId:${jwtCookie}`, responseData.id);
+    await redis.set(`sessionId:${jwtCookie}`, JSON.stringify(responseData));
 
     return Response.json({
       message: "great",

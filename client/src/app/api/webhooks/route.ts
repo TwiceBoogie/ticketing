@@ -1,5 +1,5 @@
-import Cors from "micro-cors";
-
-const cors = Cors({
-  allowMethods: ["POST", "HEAD"],
-});
+export async function POST(req: Request) {
+  const data = await req.json();
+  console.log(data);
+  return Response.json({message: "hello"});
+}

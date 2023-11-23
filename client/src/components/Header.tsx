@@ -1,20 +1,7 @@
-import Link from "next/link";
-import {
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-} from "@nextui-org/navbar";
-import SellTicketButton from "./buttons/SellTicketButton";
-import DarkModeToggle from "./buttons/DarkModeToggle";
-import SignButton from "./buttons/SignButton";
-import SignOut from "./buttons/SignOut";
 import { cookies } from "next/headers";
-import { createRedisInstance } from "@/core/config";
-import { Button } from "@nextui-org/button";
 import { Suspense } from "react";
-
-const redis = createRedisInstance();
+import Link from "next/link";
+import NavBar from "./NavBar";
 
 type LinkConfig = {
   label: string;
@@ -49,50 +36,21 @@ async function getCurrentUser() {
   }
 }
 
-export const Header = async () => {
+interface Props {
+  pageSite: string;
+}
+
+const Header = async ({ pageSite }: Props) => {
   const user: CurrentUserI = await getCurrentUser();
   let loggedIn = user.currentUser ? true : false;
 
   return (
-    <Navbar>
-      <NavbarBrand>
-        <Link href="/" className="font-bold ">
-          GitTix
-        </Link>
-      </NavbarBrand>
-
-      <NavbarContent className="hidden sm:flex gap-4" justify="end">
-        {loggedIn ? (
-          <>
-            <NavbarItem>
-              <Suspense>
-                <SellTicketButton />
-              </Suspense>
-            </NavbarItem>
-            <NavbarItem>
-              <Suspense>
-                <SignOut />
-              </Suspense>
-            </NavbarItem>
-          </>
-        ) : (
-          <>
-            <NavbarItem>
-              <Suspense>
-                <SignButton url="/api/signup" title="Sign Up" />
-              </Suspense>
-            </NavbarItem>
-            <NavbarItem>
-              <Suspense>
-                <SignButton url="/api/signin" title="Sign In" />
-              </Suspense>
-            </NavbarItem>
-          </>
-        )}
-        <Suspense>
-          <DarkModeToggle />
-        </Suspense>
-      </NavbarContent>
-    </Navbar>
+    <header className="bg-white dark:bg-gray-800">
+      <Suspense>
+        <NavBar loggedIn={loggedIn} pageSite={pageSite} />
+      </Suspense>
+    </header>
   );
 };
+
+export default Header;

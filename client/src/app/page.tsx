@@ -7,6 +7,8 @@ import { Ticket } from "@/core";
 import TableContent from "@/components/TableContent";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import Loading from "./loading";
+import Header from "@/components/Header";
+import { TableTemplate } from "@/components/templates";
 
 type NotAuthorized = {
   error: string;
@@ -54,6 +56,7 @@ async function getOrders(jwt: RequestCookie | undefined) {
         Cookie: `jwt=${jwt.value}`,
       },
     });
+
     const responseData: Order[] = await res.json();
     console.log("fetching orders");
 
@@ -84,46 +87,34 @@ export default async function Home() {
     userData = JSON.parse(serializedUserData as string);
   }
 
-  const ordersResponse: OrdersResponse = await getOrders(jwt);
+  // const ordersResponse: OrdersResponse = await getOrders(jwt);
 
-  let transformOrders: TransformOrder[] = [];
-  let loggedIn = false;
-  if (isOrder(ordersResponse)) {
-    loggedIn = true;
-    const trans = ordersResponse as Order[];
-    trans.map((order, idx) => {
-      transformOrders[idx] = transformOrder(order);
-    });
-  }
+  // let transformOrders: TransformOrder[] = [];
+  // let loggedIn = false;
+  // if (isOrder(ordersResponse)) {
+  //   loggedIn = true;
+  //   const trans = ordersResponse as Order[];
+  //   trans.map((order, idx) => {
+  //     transformOrders[idx] = transformOrder(order);
+  //   });
+  // }
 
   return (
-    <div className="flex flex-col lg:flex-row h-fit gap-4 text-center">
-      <div className="flex flex-col gap-4 p-10 card2 dark:card1">
-        <h1 className="flex justify-center text-2xl font-bold">
-          Available Tickets
-        </h1>
-        <Suspense fallback={<Loading />}>
-          <TableContent
-            data={tickets}
-            type="tickets"
-            userId={userData.userId}
-          />
-        </Suspense>
-      </div>
-      {loggedIn && (
-        <div className="flex flex-col gap-4 p-10 card2 dark:card1">
-          <>
-            <h1 className="flex justify-center text-2xl font-bold">Orders</h1>
-            <Suspense fallback={<Loading />}>
+    <div className="h-screen bg-white dark:bg-slate-800">
+      <Header pageSite="Home" />
+      <Suspense>
+        <TableTemplate>
+          <div className="flex flex-col justify-center lg:flex-row gap-4 text-center p-4">
+            <div className="flex flex-col gap-4 p-10 card2 dark:card1">
               <TableContent
-                data={transformOrders}
-                type="orders"
+                data={tickets}
+                type="tickets"
                 userId={userData.userId}
               />
-            </Suspense>
-          </>
-        </div>
-      )}
+            </div>
+          </div>
+        </TableTemplate>
+      </Suspense>
     </div>
   );
 }
