@@ -10,11 +10,11 @@ const router = express.Router();
 const endpointSecret = process.env.WEBHOOK_KEY!;
 
 router.post(
-  "/api/webhook",
+  "/api/payments/webhook",
   express.raw({ type: "application/json" }),
   async (req: Request, res: Response) => {
     const sig = req.headers["stripe-signature"];
-
+    
     if (!sig) {
       return res.redirect(`${process.env.REDIRECT_USER!}`);
     }
@@ -32,7 +32,7 @@ router.post(
     switch (event.type) {
       case "checkout.session.completed":
         const checkoutSessionCompleted = event.data.object;
-        console.log(checkoutSessionCompleted, 3);
+
         // Then define and call a function to handle the event checkout.session.completed
         if (checkoutSessionCompleted.metadata) {
           const order = await Order.findById(
@@ -54,46 +54,6 @@ router.post(
         const checkoutSessionExpired = event.data.object;
         console.log(checkoutSessionExpired, 4);
         // Then define and call a function to handle the event checkout.session.expired
-        break;
-      case "payment_intent.amount_capturable_updated":
-        const paymentIntentAmountCapturableUpdated = event.data.object;
-        console.log(paymentIntentAmountCapturableUpdated, 5);
-        // Then define and call a function to handle the event payment_intent.amount_capturable_updated
-        break;
-      case "payment_intent.canceled":
-        const paymentIntentCanceled = event.data.object;
-        console.log(paymentIntentCanceled, 6);
-        // Then define and call a function to handle the event payment_intent.canceled
-        break;
-      case "payment_intent.created":
-        const paymentIntentCreated = event.data.object;
-        console.log(paymentIntentCreated, 7);
-        // Then define and call a function to handle the event payment_intent.created
-        break;
-      case "payment_intent.partially_funded":
-        const paymentIntentPartiallyFunded = event.data.object;
-        console.log(paymentIntentPartiallyFunded, 8);
-        // Then define and call a function to handle the event payment_intent.partially_funded
-        break;
-      case "payment_intent.payment_failed":
-        const paymentIntentPaymentFailed = event.data.object;
-        console.log(paymentIntentPaymentFailed, 9);
-        // Then define and call a function to handle the event payment_intent.payment_failed
-        break;
-      case "payment_intent.processing":
-        const paymentIntentProcessing = event.data.object;
-        console.log(paymentIntentProcessing, 10);
-        // Then define and call a function to handle the event payment_intent.processing
-        break;
-      case "payment_intent.requires_action":
-        const paymentIntentRequiresAction = event.data.object;
-        console.log(paymentIntentRequiresAction, 11);
-        // Then define and call a function to handle the event payment_intent.requires_action
-        break;
-      case "payment_intent.succeeded":
-        const paymentIntentSucceeded = event.data.object;
-        console.log(paymentIntentSucceeded, 12);
-        // Then define and call a function to handle the event payment_intent.succeeded
         break;
       // ... handle other event types
       default:

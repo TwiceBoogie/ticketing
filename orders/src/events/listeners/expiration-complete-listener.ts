@@ -24,9 +24,16 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
     if (order.status === OrderStatus.Complete) {
       return msg.ack();
     }
-
-    const session = await stripe.checkout.sessions.expire(data.sessionId);
-    console.log(order, "listening for stuff");
+    try {
+      // const session = await stripe.checkout.sessions.expire(data.sessionId);
+      // console.log(session, "expiring session");
+      // const productDel = await stripe.products.del(
+      //   session.metadata?.productId as string
+      // )
+      
+    } catch (error) {
+      console.error(error);
+    }
 
     order.set({
       status: OrderStatus.Cancelled,

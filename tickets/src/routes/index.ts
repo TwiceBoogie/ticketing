@@ -8,8 +8,6 @@ router.get("/api/tickets", async (req: Request, res: Response) => {
     orderId: undefined,
   });
 
-  console.log(tickets);
-
   res.send(tickets);
 });
 

@@ -13,6 +13,7 @@ import { Order } from "../models/order";
 import { OrderCreatedPublisher } from "../events/publishers/order-created-publisher";
 import { stripe } from "../stripe";
 import { natsWrapper } from "../nats-wrapper";
+import Stripe from "stripe";
 
 const router = express.Router();
 
@@ -51,48 +52,67 @@ router.post(
     const expiration = new Date();
     expiration.setSeconds(expiration.getSeconds() + EXPIRATION_WINDOW_SECONDS);
 
-    // Build the order and save it to the database
-    const order = Order.build({
-      userId: req.currentUser!.id,
-      status: OrderStatus.Created,
-      expiresAt: expiration,
-      ticket,
-    });
-    await order.save();
+    let checkoutSession: Stripe.Response<Stripe.Checkout.Session>;
+    let product: Stripe.Response<Stripe.Product>;
+    const session = await mongoose.startSession();
+    // Build the order, Product (stripe) and CheckoutSession. If it fails
+    // it will abort the transaction. In order to keep consistency.
+    try {
+      session.startTransaction();
 
-    // build a product and checkout session per order (stripe)
-    const product = await stripe.products.create({
-      name: ticket.title,
-      default_price_data: {
-        unit_amount: ticket.price * 100,
-        currency: "usd",
-      },
-    });
-    const checkoutSession = await stripe.checkout.sessions.create({
-      mode: "payment",
-      line_items: [{ price: product.default_price as string, quantity: 1 }],
-      success_url: `http://localhost:3000/checkout/?success=true`,
-      cancel_url: `http://localhost:3000/checkout/?canceled=true`,
-      metadata: {
-        orderId: order.id,
-      },
-    });
+      const order = Order.build({
+        userId: req.currentUser!.id,
+        status: OrderStatus.Created,
+        expiresAt: expiration,
+        ticket,
+      });
+  
+      await order.save({session});
 
-    // Publish an event saying that an order was created
-    new OrderCreatedPublisher(natsWrapper.client).publish({
-      id: order.id,
-      version: order.version,
-      status: order.status,
-      userId: order.userId,
-      sessionId: checkoutSession.id,
-      expiresAt: order.expiresAt.toISOString(),
-      ticket: {
-        id: ticket.id,
-        price: ticket.price,
-      },
-    });
+      product = await stripe.products.create({
+        name: ticket.title,
+        default_price_data: {
+          unit_amount: ticket.price * 100,
+          currency: "usd",
+        },
+      });
+      checkoutSession = await stripe.checkout.sessions.create({
+        mode: "payment",
+        line_items: [{ price: product.default_price as string, quantity: 1 }],
+        success_url: `https://rancher.twiceb.dev/checkout/?success=true`,
+        cancel_url: `http://rancher.twiceb.dev/checkout/?canceled=true`,
+        metadata: {
+          orderId: order.id,
+          productId: product.id
+        },
+      });
 
-    res.status(201).send(checkoutSession);
+      await session.commitTransaction();
+      session.endSession();
+
+      // Publish an event saying that an order was created
+      new OrderCreatedPublisher(natsWrapper.client).publish({
+        id: order.id,
+        version: order.version,
+        status: order.status,
+        userId: order.userId,
+        sessionId: checkoutSession.id,
+        expiresAt: order.expiresAt.toISOString(),
+        ticket: {
+          id: ticket.id,
+          price: ticket.price,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      await session.abortTransaction();
+      session.endSession();
+      await stripe.checkout.sessions.expire(checkoutSession!.id);
+      
+      throw new BadRequestError("Server Error has occurred");
+    }
+    
+    res.status(201).send({sessionId: checkoutSession.id});
   }
 );
 
