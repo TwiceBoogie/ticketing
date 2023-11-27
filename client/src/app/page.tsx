@@ -6,9 +6,7 @@ import { createRedisInstance } from "@/core/config";
 import { Ticket } from "@/core";
 import TableContent from "@/components/TableContent";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
-import Loading from "./loading";
 import Header from "@/components/Header";
-import { TableTemplate } from "@/components/templates";
 
 type NotAuthorized = {
   error: string;
@@ -87,24 +85,27 @@ export default async function Home() {
     userData = JSON.parse(serializedUserData as string);
   }
 
-  // const ordersResponse: OrdersResponse = await getOrders(jwt);
+  const ordersResponse: OrdersResponse = await getOrders(jwt);
 
-  // let transformOrders: TransformOrder[] = [];
-  // let loggedIn = false;
-  // if (isOrder(ordersResponse)) {
-  //   loggedIn = true;
-  //   const trans = ordersResponse as Order[];
-  //   trans.map((order, idx) => {
-  //     transformOrders[idx] = transformOrder(order);
-  //   });
-  // }
+  let transformOrders: TransformOrder[] = [];
+  let loggedIn = false;
+  if (isOrder(ordersResponse)) {
+    loggedIn = true;
+    const trans = ordersResponse as Order[];
+    trans.map((order, idx) => {
+      transformOrders[idx] = transformOrder(order);
+    });
+  }
 
   return (
-    <div className="h-screen bg-white dark:bg-slate-800">
+    <div className="min-h-screen bg-slate-300 dark:bg-slate-800">
       <Header pageSite="Home" />
       <Suspense>
-        <TableTemplate>
-          <div className="flex flex-col justify-center lg:flex-row gap-4 text-center p-4">
+        <div className="flex flex-col justify-center 2xl:flex-row gap-4 text-center p-4">
+          <div className="pb-6 pt-24 px-4">
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
+              Tickets
+            </h1>
             <div className="flex flex-col gap-4 p-10 card2 dark:card1">
               <TableContent
                 data={tickets}
@@ -113,7 +114,21 @@ export default async function Home() {
               />
             </div>
           </div>
-        </TableTemplate>
+          {loggedIn && (
+            <div className="pb-6 pt-24 px-4">
+              <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
+                Orders
+              </h1>
+              <div className="flex flex-col gap-4 p-10 card2 dark:card1">
+                <TableContent
+                  data={transformOrders}
+                  type="orders"
+                  userId={userData.userId}
+                />
+              </div>
+            </div>
+          )}
+        </div>
       </Suspense>
     </div>
   );

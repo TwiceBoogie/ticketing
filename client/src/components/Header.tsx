@@ -1,6 +1,5 @@
 import { cookies } from "next/headers";
 import { Suspense } from "react";
-import Link from "next/link";
 import NavBar from "./NavBar";
 
 type LinkConfig = {
@@ -18,6 +17,7 @@ interface CurrentUserI {
 async function getCurrentUser() {
   try {
     const jwt = cookies().get("jwt");
+
     const res = await fetch(
       `${process.env.AUTH_ENDPOINT!}/api/users/currentuser`,
       {

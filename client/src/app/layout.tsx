@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Providers } from "./provider";
+import Head from "next/head";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,13 +20,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full">
-      <body className={`${inter.className} h-full`}>
-        <Providers>
-          {/* <div className="bg-purple-400 dark:bg-purple-800 text-black dark:text-white">
-          </div> */}
-            {children}
-          {modal}
-        </Providers>
+      <Head>
+        <link
+          rel="stylesheet"
+          href="https://unpkg.com/@material-tailwind/html@latest/styles/material-tailwind.css"
+        />
+      </Head>
+      <body
+        className={`${inter.className} h-full bg-slate-300 dark:bg-slate-800`}
+      >
+        {children}
+        {modal}
+        <Script src="https://unpkg.com/@material-tailwind/html@latest/scripts/ripple.js" />
       </body>
     </html>
   );

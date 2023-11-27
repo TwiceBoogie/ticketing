@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface Props {
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export const TimeLeft = ({ expiresAt }: Props) => {
+  const router = useRouter();
   const [timeLeft, setTimeLeft] = useState(0);
 
   useEffect(() => {
@@ -40,4 +42,3 @@ export const TimeLeft = ({ expiresAt }: Props) => {
     </div>
   );
 };
-

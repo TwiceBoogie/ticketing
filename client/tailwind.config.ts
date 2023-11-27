@@ -1,5 +1,4 @@
 import type { Config } from "tailwindcss";
-import { nextui } from "@nextui-org/react";
 
 const config: Config = {
   content: [
@@ -9,9 +8,16 @@ const config: Config = {
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      backgroundImage: {
+        hero_pattern: "url('/public/ffflux.svg')",
+      },
+    },
   },
   darkMode: "class",
-  plugins: [require("@tailwindcss/forms"), require("@tailwindcss/aspect-ratio"), nextui()],
+  plugins: [
+    require("@tailwindcss/forms"),
+    require("@tailwindcss/aspect-ratio"),
+  ],
 };
 export default config;

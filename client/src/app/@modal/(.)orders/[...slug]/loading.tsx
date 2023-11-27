@@ -1,4 +1,4 @@
-import { Spinner } from "@nextui-org/spinner";
+import { SpinnerIcon } from "@/components/icons";
 
 const loading = () => {
   return (
@@ -6,7 +6,7 @@ const loading = () => {
       <div className="flex flex-col gap-2">
         <h1>Please wait</h1>
         <h1 className="text-2xl font-bold">Loading...</h1>
-        <Spinner />
+        <SpinnerIcon />
       </div>
     </div>
   );

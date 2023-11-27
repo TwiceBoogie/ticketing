@@ -1,94 +1,23 @@
 "use client";
 
-import { Fragment, useState } from "react";
-import { Dialog, Popover, Tab, Transition } from "@headlessui/react";
-import { CartIcon, XMarkIcon, Bars3Icon, MagnifyingGlassIcon } from "./icons";
+import { Fragment, useEffect, useState } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+import { XMarkIcon, Bars3Icon } from "./icons";
 
 import SellTicketButton from "./buttons/SellTicketButton";
 import DarkModeToggle from "./buttons/DarkModeToggle";
 import Link from "next/link";
-import { ShoppingCart } from "./banners";
 import SignOut from "./buttons/SignOut";
+import { classNames } from "@/core";
+import { CookieBanner } from "./banners";
 
 const navigation = {
-  categories: [
-    {
-      id: "women",
-      name: "Women",
-      featured: [
-        {
-          name: "New Arrivals",
-          href: "#",
-          imageSrc:
-            "https://tailwindui.com/img/ecommerce-images/mega-menu-category-01.jpg",
-          imageAlt:
-            "Models sitting back to back, wearing Basic Tee in black and bone.",
-        },
-        {
-          name: "Basic Tees",
-          href: "#",
-          imageSrc:
-            "https://tailwindui.com/img/ecommerce-images/mega-menu-category-02.jpg",
-          imageAlt:
-            "Close up of Basic Tee fall bundle with off-white, ochre, olive, and black tees.",
-        },
-      ],
-      sections: [
-        {
-          id: "clothing",
-          name: "Clothing",
-          items: [
-            { name: "Tops", href: "#" },
-            { name: "Dresses", href: "#" },
-            { name: "Pants", href: "#" },
-            { name: "Denim", href: "#" },
-            { name: "Sweaters", href: "#" },
-            { name: "T-Shirts", href: "#" },
-            { name: "Jackets", href: "#" },
-            { name: "Activewear", href: "#" },
-            { name: "Browse All", href: "#" },
-          ],
-        },
-        {
-          id: "accessories",
-          name: "Accessories",
-          items: [
-            { name: "Watches", href: "#" },
-            { name: "Wallets", href: "#" },
-            { name: "Bags", href: "#" },
-            { name: "Sunglasses", href: "#" },
-            { name: "Hats", href: "#" },
-            { name: "Belts", href: "#" },
-          ],
-        },
-        {
-          id: "brands",
-          name: "Brands",
-          items: [
-            { name: "Full Nelson", href: "#" },
-            { name: "My Way", href: "#" },
-            { name: "Re-Arranged", href: "#" },
-            { name: "Counterfeit", href: "#" },
-            { name: "Significant Other", href: "#" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "men",
-      name: "Men",
-    },
-  ],
   pages: [
     { name: "Home", href: "/" },
-    { name: "page2", href: "#" },
+    { name: "Cookie-Policy", href: "/cookie-policy" },
     { name: "page3", href: "#" },
   ],
 };
-
-function classNames(...classes: (string | undefined | null | false)[]): string {
-  return classes.filter(Boolean).join(" ");
-}
 
 const NavBar = ({
   loggedIn,
@@ -98,12 +27,11 @@ const NavBar = ({
   pageSite: string;
 }) => {
   const sitePage = pageSite;
-  const [openCart, setOpenCart] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const handleShoppingCart = () => {
-    setOpenCart(true);
-  };
+  // useEffect(() => {
+  //   console.log(loggedIn, "hi");
+  // }, [loggedIn]);
 
   return (
     <div className="bg-white dark:bg-slate-800">
@@ -184,15 +112,12 @@ const NavBar = ({
       </Transition.Root>
 
       <header className="relative">
-        <p className="flex h-10 items-center justify-center bg-indigo-600 px-4 text-sm font-medium text-white sm:px-6 lg:px-8">
-          Get free delivery on orders over $100
-        </p>
-
+        {/* <CookieBanner /> */}
         <nav
           aria-label="Top"
           className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
         >
-          <div className="border-b border-gray-200">
+          <div className="">
             <div className="flex h-16 items-center">
               {/* mobile menu open button */}
               <button
@@ -256,6 +181,7 @@ const NavBar = ({
                         aria-hidden="true"
                       />
                       <Link href="/signup">
+                        {/* <Button>Register</Button> */}
                         <button className="inline-block shrink-0 rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500 dark:hover:bg-blue-700 dark:hover:text-white">
                           Register
                         </button>
@@ -266,24 +192,6 @@ const NavBar = ({
 
                 <div className="ml-8 flex">
                   <DarkModeToggle />
-                </div>
-
-                {/* Cart */}
-                <div className="ml-4 flow-root lg:ml-6">
-                  <button
-                    className="group -m-2 flex items-center p-2"
-                    onClick={handleShoppingCart}
-                  >
-                    <CartIcon
-                      className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-                      aria-hidden="true"
-                    />
-                    <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-                      0
-                    </span>
-                    <span className="sr-only">items in cart, view bag</span>
-                  </button>
-                  <ShoppingCart openCart={openCart} setOpenCart={setOpenCart} />
                 </div>
               </div>
             </div>

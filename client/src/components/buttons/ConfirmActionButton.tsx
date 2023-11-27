@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import {
   useState,
   type Dispatch,
@@ -5,7 +6,6 @@ import {
   useEffect,
   useCallback,
 } from "react";
-import { Button } from "@nextui-org/button";
 
 interface Props {
   id: string;
@@ -30,6 +30,7 @@ const ConfirmActionButton = ({
   setIsEmpty,
   isEmpty,
 }: Props) => {
+  const router = useRouter();
   const [disabled, setDisabled] = useState(false);
   let url = "";
   let btnTitle = "";
@@ -67,7 +68,6 @@ const ConfirmActionButton = ({
 
   useEffect(() => {
     if (!isEmpty) {
-      console.log(id, method, url);
       const fetchData = async () => {
         try {
           const res = await fetch(url, {
@@ -96,9 +96,14 @@ const ConfirmActionButton = ({
   }, [isEmpty, id, method, price, setSuccess, title, url]);
   return (
     <>
-      <Button color="primary" onPress={handleAction} isDisabled={disabled}>
+      <button
+        className={`flex w-full justify-center rounded-xl px-3 py-2 text-sm text-white bg-zinc-600 hover:bg-zinc-700 sm:mt-0 sm:w-auto
+        ${disabled ? "opacity-50 pointer-events-none" : "hover:opacity-80"}`}
+        onClick={handleAction}
+        disabled={disabled}
+      >
         Confirm {btnTitle}
-      </Button>
+      </button>
     </>
   );
 };

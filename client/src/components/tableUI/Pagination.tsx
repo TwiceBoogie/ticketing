@@ -38,22 +38,22 @@ export const Pagination = ({
     pageArray.push(i);
   }
   return (
-    <div className="flex items-center justify-between border-t border-gray-200 px-4 py-3 sm:px-6">
+    <div className="flex items-center justify-between px-4 py-3 sm:px-6">
       <div className="flex flex-1 items-center justify-between">
         <div>
           <nav
-            className="isolate inline-flex -space-x-px rounded-md shadow-sm"
+            className="isolate inline-flex -space-x-px rounded-md shadow-lg bg-zinc-200 dark:bg-zinc-700"
             aria-label="Pagination"
           >
             <button
-              className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+              className="relative inline-flex items-center rounded-l-lg px-2 py-1 text-gray-400 dark:text-white hover:bg-zinc-300 dark:hover:bg-zinc-500"
               onClick={onPreviousPage}
             >
               <span className="sr-only">Previous</span>
               <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
             </button>
             {startPage > 1 && (
-              <span className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0">
+              <span className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 dark:text-white hover:bg-zinc-300 dark:hover:bg-zinc-500 focus:outline-offset-0">
                 ...
               </span>
             )}
@@ -65,8 +65,8 @@ export const Pagination = ({
                 className={classNames(
                   page === pageNumber
                     ? "z-10 bg-indigo-600 text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    : "text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0",
-                  "relative inline-flex items-center px-4 py-2 text-sm font-semibold"
+                    : "text-gray-700 dark:text-white focus:outline-offset-0 hover:bg-zinc-300 dark:hover:bg-zinc-500 rounded-none",
+                  "relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg"
                 )}
               >
                 {pageNumber}
@@ -74,12 +74,12 @@ export const Pagination = ({
             ))}
 
             {endPage < pages && (
-              <span className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0">
+              <span className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 focus:outline-offset-0">
                 ...
               </span>
             )}
             <button
-              className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+              className="relative inline-flex items-center rounded-r-lg px-2 py-1 text-gray-400 dark:text-white hover:bg-zinc-300 dark:hover:bg-zinc-500"
               onClick={onNextPage}
             >
               <span className="sr-only">Next</span>

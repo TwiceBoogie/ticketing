@@ -4,16 +4,16 @@ import { useState, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import DarkModeToggle from "@/components/buttons/DarkModeToggle";
 import Link from "next/link";
-import { Validator } from "@/core";
+import { Validator, classNames } from "@/core";
 import { AlertBanner } from "@/components/banners";
 import { SpinnerIcon } from "@/components/icons";
 
 interface Props {
-    url: string;
-    btnTitle: string;
+  url: string;
+  btnTitle: string;
 }
 
-export const SignForm = ({url, btnTitle}: Props) => {
+export const SignForm = ({ url, btnTitle }: Props) => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,13 +25,13 @@ export const SignForm = ({url, btnTitle}: Props) => {
 
   const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInvalidE(false);
-    setShowBanner(false)
+    setShowBanner(false);
     setEmail(event.target.value);
   };
 
   const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInvalidP(false);
-    setShowBanner(false)
+    setShowBanner(false);
     setPassword(event.target.value);
   };
 
@@ -40,16 +40,17 @@ export const SignForm = ({url, btnTitle}: Props) => {
     setIsLoading(true);
     setShowBanner(false);
     const formData = { email, password };
+    const props = { formData, setInvalidE, setInvalidP };
     await Validator.onSubmit({
-      formData,
-      setInvalidE,
-      setInvalidP,
+      props,
       setIsLoading,
       setError,
       router,
       url,
     });
     setShowBanner(true);
+    router.prefetch("/");
+    router.push("/");
   };
   return (
     <>
@@ -80,11 +81,12 @@ export const SignForm = ({url, btnTitle}: Props) => {
             type="email"
             id="Email"
             name="email"
-            className={`mt-1 w-full rounded-md ${
+            className={classNames(
               invalidE
                 ? "border-red-500 dark:border-red-500"
-                : "border-gray-200 dark:border-gray-700"
-            } bg-white text-sm text-gray-700 shadow-sm dark:bg-gray-800 dark:text-gray-200 `}
+                : "border-gray-200 dark:border-gray-700",
+              "mt-1 w-full rounded-md bg-white text-sm text-gray-700 shadow-sm dark:bg-gray-800 dark:text-gray-200"
+            )}
             onBlur={() => {
               Validator.validateEmail({ email, setInvalidE });
             }}
@@ -112,11 +114,12 @@ export const SignForm = ({url, btnTitle}: Props) => {
               Validator.validatePassword({ password, setInvalidP });
             }}
             onChange={handlePasswordChange}
-            className={`mt-1 w-full rounded-md ${
+            className={classNames(
               invalidP
                 ? "border-red-500 dark:border-red-500"
-                : "border-gray-200 dark:border-gray-700"
-            } bg-white text-sm text-gray-700 shadow-sm dark:bg-gray-800 dark:text-gray-200 `}
+                : "border-gray-200 dark:border-gray-700",
+              "mt-1 w-full rounded-md bg-white text-sm text-gray-700 shadow-sm dark:bg-gray-800 dark:text-gray-200"
+            )}
           />
           {invalidP && (
             <span className="mt-2 text-sm text-red-500">
@@ -127,7 +130,8 @@ export const SignForm = ({url, btnTitle}: Props) => {
 
         <div className="col-span-6">
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            {btnTitle === "Login" ? "By logging in" : "By registering with us"}, you agree to our{" "}
+            {btnTitle === "Login" ? "By logging in" : "By registering with us"},
+            you agree to our{" "}
             <a href="#" className="text-gray-700 underline dark:text-gray-200">
               terms and conditions
             </a>{" "}
@@ -147,8 +151,14 @@ export const SignForm = ({url, btnTitle}: Props) => {
             {isLoading ? <SpinnerIcon /> : btnTitle}
           </button>
           <p className="mt-4 text-sm text-gray-500 dark:text-gray-400 sm:mt-0">
-            {btnTitle === "Login" ? "Don't have an account" : "Already have an account"}?{" "}
-            <Link href={btnTitle === "Login" ? "/signup" : "/signin"} className="text-indigo-500">
+            {btnTitle === "Login"
+              ? "Don't have an account"
+              : "Already have an account"}
+            ?{" "}
+            <Link
+              href={btnTitle === "Login" ? "/signup" : "/signin"}
+              className="text-indigo-500"
+            >
               {btnTitle === "Login" ? "Register" : "Login"}
             </Link>
             .

@@ -1,3 +1,4 @@
+import Header from "@/components/Header";
 import { cookies } from "next/headers";
 import { Suspense, useEffect, useState } from "react";
 
@@ -30,7 +31,13 @@ async function getOrder(orderId: string) {
 }
 
 export default async function Orders({ params }: Props) {
-  const data = await getOrder(params.orderId);
+  console.log(params);
+  // const data = await getOrder(params.orderId);
 
-  return <div>hello</div>;
+  return (
+    <div>
+      <Header pageSite="orders" />
+      <h1>hello</h1>
+    </div>
+  );
 }

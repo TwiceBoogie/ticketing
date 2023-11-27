@@ -1,18 +1,22 @@
 import { useRouter } from "next/navigation";
-import React from "react";
+import { useState } from "react";
+import { SpinnerIcon } from "../icons";
 
 const SignOut = () => {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const handleSignout = async () => {
     try {
+      setIsLoading(true);
       const res = await fetch("/api/signout", {
         method: "GET",
         headers: {
           "Content-type": "application/json",
         },
       });
-      const responseData = await res.json();
+
       if (res.ok) {
+        setIsLoading(false);
         router.refresh();
       }
     } catch (error) {
@@ -24,7 +28,7 @@ const SignOut = () => {
       className="inline-block shrink-0 rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
       onClick={handleSignout}
     >
-      Sign out
+      {isLoading ? <SpinnerIcon /> : "Sign out"}
     </button>
   );
 };

@@ -10,6 +10,7 @@ import {
   PlusIcon,
   Squares2X2Icon,
 } from "../icons";
+import { classNames } from "@/core";
 
 const sortOptions = [
   { name: "Most Popular", current: true },
@@ -18,10 +19,7 @@ const sortOptions = [
   { name: "Price: Low to High", current: false },
   { name: "Price: High to Low", current: false },
 ];
-const subCategories = [
-  { name: "Available Tickets" },
-  { name: "Orders"},
-];
+const subCategories = [{ name: "Available Tickets" }, { name: "Orders" }];
 const filters = [
   {
     id: "columns",
@@ -43,10 +41,6 @@ const filters = [
     ],
   },
 ];
-
-function classNames(...classes: (string | undefined | null | false)[]): string {
-  return classes.filter(Boolean).join(" ");
-}
 
 interface Props {
   children: ReactNode;
@@ -101,10 +95,7 @@ export const TableTemplate = ({ children }: Props) => {
                 {/* Filters */}
                 <div className="mt-4 border-t border-gray-200">
                   <h3 className="sr-only">Categories</h3>
-                  <ul
-                    role="list"
-                    className="px-2 py-3 font-medium"
-                  >
+                  <ul role="list" className="px-2 py-3 font-medium">
                     {subCategories.map((category) => (
                       <li key={category.name}>
                         <button className="block px-2 py-3">

@@ -20,10 +20,11 @@ export const BottomContent = ({
 }: Props) => {
   const bottomContent = useMemo(() => {
     return (
-      <div className="flex justify-center md:justify-between items-center gap-2">
+      <div className="z-1 flex justify-center md:justify-between items-center gap-2">
         <div className="hidden md:flex gap-2">
           <button
             className="inline-block shrink-0 rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500 dark:hover:bg-blue-700 dark:hover:text-white"
+            data-ripple-light="true"
             disabled={hasSearchFilter}
             onClick={onPreviousPage}
           >
@@ -41,6 +42,7 @@ export const BottomContent = ({
         <div className="hidden md:flex gap-2">
           <button
             className="inline-block shrink-0 rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500 dark:hover:bg-blue-700 dark:hover:text-white"
+            data-ripple-light="true"
             disabled={hasSearchFilter}
             onClick={onNextPage}
           >

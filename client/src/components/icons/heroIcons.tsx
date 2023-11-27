@@ -338,22 +338,265 @@ export const ChevronRightIcon = ({
 }: IconProps) => {
   return (
     <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={1.5}
-    width={width || 26}
-    height={height || 26}
-    viewBox="0 0 24 24"
-    {...props}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="m8.25 4.5 7.5 7.5-7.5 7.5"
-    />
-  </svg>
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      width={width || 26}
+      height={height || 26}
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="m8.25 4.5 7.5 7.5-7.5 7.5"
+      />
+    </svg>
   );
 };
 
+export const SunIcon = ({ size, height, width, ...props }: IconProps) => {
+  return (
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      height={size || height || 26}
+      role="presentation"
+      viewBox="0 0 24 24"
+      width={size || width || 26}
+      {...props}
+    >
+      <g fill="currentColor">
+        <path d="M19 12a7 7 0 11-7-7 7 7 0 017 7z" />
+        <path d="M12 22.96a.969.969 0 01-1-.96v-.08a1 1 0 012 0 1.038 1.038 0 01-1 1.04zm7.14-2.82a1.024 1.024 0 01-.71-.29l-.13-.13a1 1 0 011.41-1.41l.13.13a1 1 0 010 1.41.984.984 0 01-.7.29zm-14.28 0a1.024 1.024 0 01-.71-.29 1 1 0 010-1.41l.13-.13a1 1 0 011.41 1.41l-.13.13a1 1 0 01-.7.29zM22 13h-.08a1 1 0 010-2 1.038 1.038 0 011.04 1 .969.969 0 01-.96 1zM2.08 13H2a1 1 0 010-2 1.038 1.038 0 011.04 1 .969.969 0 01-.96 1zm16.93-7.01a1.024 1.024 0 01-.71-.29 1 1 0 010-1.41l.13-.13a1 1 0 011.41 1.41l-.13.13a.984.984 0 01-.7.29zm-14.02 0a1.024 1.024 0 01-.71-.29l-.13-.14a1 1 0 011.41-1.41l.13.13a1 1 0 010 1.41.97.97 0 01-.7.3zM12 3.04a.969.969 0 01-1-.96V2a1 1 0 012 0 1.038 1.038 0 01-1 1.04z" />
+      </g>
+    </svg>
+  );
+};
 
+export const MoonIcon = ({ size, height, width, ...props }: IconProps) => {
+  return (
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      height={size || height || 26}
+      role="presentation"
+      viewBox="0 0 24 24"
+      width={size || width || 26}
+      {...props}
+    >
+      <path
+        d="M21.53 15.93c-.16-.27-.61-.69-1.73-.49a8.46 8.46 0 01-1.88.13 8.409 8.409 0 01-5.91-2.82 8.068 8.068 0 01-1.44-8.66c.44-1.01.13-1.54-.09-1.76s-.77-.55-1.83-.11a10.318 10.318 0 00-6.32 10.21 10.475 10.475 0 007.04 8.99 10 10 0 002.89.55c.16.01.32.02.48.02a10.5 10.5 0 008.47-4.27c.67-.93.49-1.519.32-1.79z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+};
+
+export const BlurryBallIcon = ({
+  size,
+  height,
+  width,
+  ...props
+}: IconProps) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="100%"
+      height="100%"
+      {...props}
+    >
+      <defs>
+        <radialGradient id="a">
+          <stop offset="0%" stopColor="hsl(315, 100%, 72%)" />
+          <stop offset="100%" stopColor="hsl(227, 100%, 50%)" />
+        </radialGradient>
+        <filter
+          id="b"
+          width="140%"
+          height="140%"
+          x="-20%"
+          y="-20%"
+          colorInterpolationFilters="sRGB"
+          filterUnits="objectBoundingBox"
+          primitiveUnits="userSpaceOnUse"
+        >
+          <feTurbulence
+            width="100%"
+            height="100%"
+            x="0%"
+            y="0%"
+            baseFrequency="0.005 0.003"
+            result="turbulence"
+            seed={2}
+            stitchTiles="stitch"
+            type="fractalNoise"
+          />
+          <feGaussianBlur
+            width="100%"
+            height="100%"
+            x="0%"
+            y="0%"
+            in="turbulence"
+            result="blur"
+            stdDeviation="20 0"
+          />
+          <feBlend
+            width="100%"
+            height="100%"
+            x="0%"
+            y="0%"
+            in="SourceGraphic"
+            in2="blur"
+            mode="color-burn"
+            result="blend"
+          />
+        </filter>
+      </defs>
+      <path fill="url(#a)" d="M0 0h700v700H0z" filter="url(#b)" />
+    </svg>
+  );
+};
+export const BlurryBallIcon2 = ({
+  size,
+  height,
+  width,
+  ...props
+}: IconProps) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      version="1.1"
+      viewBox="0 0 700 700"
+      width="100%" // Use percentage width and height to cover the screen
+      height="100%"
+      opacity="1"
+    >
+      <defs>
+        <linearGradient
+          gradientTransform="rotate(150, 0.5, 0.5)"
+          x1="50%"
+          y1="0%"
+          x2="50%"
+          y2="100%"
+          id="ffflux-gradient"
+        >
+          <stop
+            stop-color="hsl(272, 99%, 54%)"
+            stop-opacity="1"
+            offset="0%"
+          ></stop>
+          <stop
+            stop-color="hsl(259, 72%, 59%)"
+            stop-opacity="1"
+            offset="100%"
+          ></stop>
+        </linearGradient>
+        <filter
+          id="ffflux-filter"
+          x="-20%"
+          y="-20%"
+          width="140%"
+          height="140%"
+          filterUnits="objectBoundingBox"
+          primitiveUnits="userSpaceOnUse"
+          color-interpolation-filters="sRGB"
+        >
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.004 0.005"
+            numOctaves="2"
+            seed="2"
+            stitchTiles="stitch"
+            x="0%"
+            y="0%"
+            width="100%"
+            height="100%"
+            result="turbulence"
+          ></feTurbulence>
+          <feGaussianBlur
+            stdDeviation="59 21"
+            x="0%"
+            y="0%"
+            width="100%"
+            height="100%"
+            in="turbulence"
+            edgeMode="duplicate"
+            result="blur"
+          ></feGaussianBlur>
+          <feBlend
+            mode="color-burn"
+            x="0%"
+            y="0%"
+            width="100%"
+            height="100%"
+            in="SourceGraphic"
+            in2="blur"
+            result="blend"
+          ></feBlend>
+        </filter>
+      </defs>
+      <rect
+        width="700"
+        height="700"
+        fill="url(#ffflux-gradient)"
+        filter="url(#ffflux-filter)"
+      ></rect>
+    </svg>
+  );
+};
+export const TriangleIcon = ({ size, height, width, ...props }: IconProps) => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" {...props}>
+      <defs>
+        <filter
+          id="a"
+          width={width || 26}
+          height={height || 26}
+          x="-100%"
+          y="-100%"
+          colorInterpolationFilters="sRGB"
+          filterUnits="objectBoundingBox"
+          primitiveUnits="userSpaceOnUse"
+        >
+          <feGaussianBlur
+            width={width || 26}
+            height={height || 26}
+            x="0%"
+            y="0%"
+            in="SourceGraphic"
+            result="blur"
+            stdDeviation="17 8"
+          />
+        </filter>
+        <filter
+          id="b"
+          width={width || 26}
+          height={height || 26}
+          x="-100%"
+          y="-100%"
+          colorInterpolationFilters="sRGB"
+          filterUnits="objectBoundingBox"
+          primitiveUnits="userSpaceOnUse"
+        >
+          <feGaussianBlur
+            width={width || 26}
+            height={height || 26}
+            x="0%"
+            y="0%"
+            in="SourceGraphic"
+            result="blur"
+            stdDeviation="10 17"
+          />
+        </filter>
+      </defs>
+      <g fill="none" stroke="hsl(305, 77%, 40%)" strokeWidth={16}>
+        <path d="M400 250 250 550h300z" filter="url(#a)" />
+        <path d="M412 250 262 550h300z" filter="url(#b)" opacity={0.25} />
+        <path d="M388 250 238 550h300z" filter="url(#b)" opacity={0.25} />
+        <path d="M400 250 250 550h300z" />
+      </g>
+    </svg>
+  );
+};

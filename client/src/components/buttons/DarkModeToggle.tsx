@@ -1,9 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Switch } from "@nextui-org/switch";
-import MoonIcon from "../icons/MoonIcon";
-import SunIcon from "../icons/SunIcon";
+import { MoonIcon, SunIcon } from "../icons";
 
 const DarkModeToggle = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -39,19 +37,9 @@ const DarkModeToggle = () => {
     }
   }, []);
   return (
-    <Switch
-      isSelected={isDarkMode}
-      size="lg"
-      color="secondary"
-      onChange={toggleDarkMode}
-      thumbIcon={({ isSelected, className }) =>
-        isSelected ? (
-          <MoonIcon className={className} />
-        ) : (
-          <SunIcon className={className} />
-        )
-      }
-    ></Switch>
+    <button type="button" onClick={toggleDarkMode} className="text-gray-400">
+      {isDarkMode ? <SunIcon /> : <MoonIcon />}
+    </button>
   );
 };
 

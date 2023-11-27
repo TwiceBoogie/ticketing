@@ -1,12 +1,22 @@
-import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
-import { Button } from "@nextui-org/button";
-import Link from "next/link";
-import ConfirmOrderButton from "@/components/buttons/ConfirmOrderButton";
+import Header from "@/components/Header";
+import { createRedisInstance } from "@/core/config";
+import { cookies } from "next/headers";
+import { TicketForm } from "@/components/forms/TicketForm";
+import { Suspense } from "react";
+
+const redis = createRedisInstance();
 
 interface Props {
   params: {
-    ticketId: string;
+    slug: string[];
   };
+}
+
+interface Ticket {
+  title: string;
+  price: number;
+  userId: string;
+  id: string;
 }
 
 async function getTicket(ticketId: string) {
@@ -30,18 +40,37 @@ async function getTicket(ticketId: string) {
 }
 
 export default async function Tickets({ params }: Props) {
-  const data = await getTicket(params.ticketId);
+  const data = await getTicket(params.slug[1]);
+  const jwt = cookies().get("jwt");
+
+  let userId: string | null = "";
+  if (jwt?.value) {
+    userId = await redis.get(jwt.value);
+  }
+  let action = params.slug[0];
+  if (action === "order") {
+    if (userId && userId === data.userId) {
+      action = "error";
+    }
+  } else if (action === "update") {
+    if (userId && userId !== data.userId) {
+      action = "error";
+    }
+  } else {
+    action = "error";
+  }
 
   return (
-    <div className="flex justify-center">
-      <Card className="w-96">
-        <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-          <p className="text-tiny uppercase font-bold">Price:</p>
-          <small className="text-default-500">${data.price}</small>
-          <h4 className="font-bold text-large">{data.title}</h4>
-        </CardHeader>
-        <CardBody>{/* <ConfirmOrderButton ticketId={data.id} /> */}</CardBody>
-      </Card>
+    <div className="bg-gray-100 dark:bg-gray-800 min-h-screen flex flex-col">
+      <Header pageSite="tickets" />
+
+      <div className="flex flex-col justify-center items-center flex-grow w-full">
+        <Suspense>
+          <TicketForm ticket={data} action={action}>
+            Price: ${data.price}
+          </TicketForm>
+        </Suspense>
+      </div>
     </div>
   );
 }

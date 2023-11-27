@@ -7,14 +7,12 @@ const redis = createRedisInstance();
 
 type ErrorResponse = {
   errors: {
-    message: string
-  }
-}
+    message: string;
+  };
+};
 type NewOrderResponse = {
   sessionId: string;
-}
-
-
+};
 
 export async function POST(req: NextRequest) {
   try {
@@ -38,11 +36,11 @@ export async function POST(req: NextRequest) {
 
     if (!res.ok) {
       return Response.json({
-        errors: "error on server"
-      })
+        errors: "error on server",
+      });
     }
 
-    revalidatePath("/");
+    revalidateTag("tickets");
 
     await redis.set(`sessionId:${jwtCookie}`, JSON.stringify(responseData));
 
@@ -96,7 +94,7 @@ export async function DELETE(req: Request) {
 }
 
 export async function GET(req: Request) {
-  revalidatePath("/");
+  revalidateTag("tickets");
 
   return Response.json({ message: "good" });
 }

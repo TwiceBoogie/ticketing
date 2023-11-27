@@ -5,6 +5,7 @@ export async function POST(req: Request) {
   try {
     const jwt = cookies().get("jwt");
     const data = await req.json();
+
     const res = await fetch(`${process.env.TICKETS_ENDPOINT!}/api/tickets`, {
       method: "POST",
       headers: {

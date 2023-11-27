@@ -49,11 +49,15 @@ const page = async ({ params }: Props) => {
 
   const jwt = cookies().get("jwt");
   if (jwt?.value && params.slug[0] === "delete") {
-    userId = await redis.get(jwt.value);
+    const serializedUserData = await redis.get(`user:${jwt.value}`);
+    const userData = JSON.parse(serializedUserData as string);
+    userId = userData.userId;
     action = "delete";
     order = await getOrder(params.slug[1], jwt.value);
   }
   if (!userId || order.userId !== userId) action = "error";
+  console.log(userId);
+  console.log(order.userId === userId);
 
   return (
     <InterceptModals data={order} action={action}>
