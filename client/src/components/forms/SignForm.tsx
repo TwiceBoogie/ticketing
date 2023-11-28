@@ -49,8 +49,8 @@ export const SignForm = ({ url, btnTitle }: Props) => {
       url,
     });
     setShowBanner(true);
-    router.prefetch("/");
     router.push("/");
+    router.refresh();
   };
   return (
     <>

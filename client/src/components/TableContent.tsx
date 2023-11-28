@@ -187,7 +187,6 @@ const TableContent = <T extends Data[]>({
       const result = await stripe?.redirectToCheckout({
         sessionId: sessionId,
       });
-      console.error(result, "result");
     } catch (error) {
       console.error(error);
     }
@@ -409,7 +408,7 @@ const TableContent = <T extends Data[]>({
           return cellValue;
       }
     },
-    [type, userId]
+    [type, userId, items]
   );
 
   return (

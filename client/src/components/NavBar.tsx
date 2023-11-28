@@ -9,14 +9,9 @@ import DarkModeToggle from "./buttons/DarkModeToggle";
 import Link from "next/link";
 import SignOut from "./buttons/SignOut";
 import { classNames } from "@/core";
-import { CookieBanner } from "./banners";
 
 const navigation = {
-  pages: [
-    { name: "Home", href: "/" },
-    { name: "Cookie-Policy", href: "/cookie-policy" },
-    { name: "page3", href: "#" },
-  ],
+  pages: [{ name: "Home", href: "/" }],
 };
 
 const NavBar = ({
@@ -28,10 +23,6 @@ const NavBar = ({
 }) => {
   const sitePage = pageSite;
   const [open, setOpen] = useState(false);
-
-  // useEffect(() => {
-  //   console.log(loggedIn, "hi");
-  // }, [loggedIn]);
 
   return (
     <div className="bg-white dark:bg-slate-800">
@@ -88,22 +79,28 @@ const NavBar = ({
                 </div>
 
                 <div className="space-y-6 border-t border-gray-200 px-4 py-6">
-                  <div className="flow-root">
-                    <Link
-                      href="/signin"
-                      className="-m-2 block p-2 font-medium text-gray-900 dark:text-white"
-                    >
-                      Sign in
-                    </Link>
-                  </div>
-                  <div className="flow-root">
-                    <Link
-                      href="/signup"
-                      className="-m-2 block p-2 font-medium text-gray-900 dark:text-white"
-                    >
-                      Create account
-                    </Link>
-                  </div>
+                  {loggedIn ? (
+                    <SignOut />
+                  ) : (
+                    <>
+                      <div className="flow-root">
+                        <Link
+                          href="/signin"
+                          className="-m-2 block p-2 font-medium text-gray-900 dark:text-white"
+                        >
+                          Sign in
+                        </Link>
+                      </div>
+                      <div className="flow-root">
+                        <Link
+                          href="/signup"
+                          className="-m-2 block p-2 font-medium text-gray-900 dark:text-white"
+                        >
+                          Create account
+                        </Link>
+                      </div>
+                    </>
+                  )}
                 </div>
               </Dialog.Panel>
             </Transition.Child>
@@ -131,7 +128,7 @@ const NavBar = ({
               </button>
 
               {/* Logo */}
-              <div className="ml-4 flex lg:ml-0">
+              <div className="hidden lg:flex lg:ml-0">
                 <Link href="/">
                   <span className="sr-only">Your Company</span>
                   <img
@@ -163,24 +160,26 @@ const NavBar = ({
               </div>
 
               <div className="ml-auto flex items-center">
-                <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
+                <div className="flex flex-1 items-center justify-end space-x-6">
                   {loggedIn ? (
                     <>
                       <SellTicketButton />
-                      <SignOut />
+                      <div className="hidden lg:flex">
+                        <SignOut />
+                      </div>
                     </>
                   ) : (
                     <>
-                      <Link href="/signin">
+                      <Link href="/signin" className="hidden lg:flex">
                         <button className="inline-block shrink-0 rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500 dark:hover:bg-blue-700 dark:hover:text-white">
                           Log In
                         </button>
                       </Link>
                       <span
-                        className="h-6 w-px bg-gray-200"
+                        className="hidden lg:h-6 lg:w-px lg:bg-gray-200"
                         aria-hidden="true"
                       />
-                      <Link href="/signup">
+                      <Link href="/signup" className="hidden lg:flex">
                         {/* <Button>Register</Button> */}
                         <button className="inline-block shrink-0 rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500 dark:hover:bg-blue-700 dark:hover:text-white">
                           Register

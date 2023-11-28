@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { Suspense } from "react";
 import NavBar from "./NavBar";
+import { useRouter } from "next/navigation";
 
 type LinkConfig = {
   label: string;
