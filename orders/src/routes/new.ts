@@ -79,8 +79,8 @@ router.post(
       checkoutSession = await stripe.checkout.sessions.create({
         mode: "payment",
         line_items: [{ price: product.default_price as string, quantity: 1 }],
-        success_url: `https://rancher.twiceb.dev/checkout/?success=true`,
-        cancel_url: `http://rancher.twiceb.dev/checkout/?canceled=true`,
+        success_url: `${process.env.URL!}/checkout/?success=true`,
+        cancel_url: `${process.env.URL!}/checkout/?canceled=true`,
         metadata: {
           orderId: order.id,
           productId: product.id

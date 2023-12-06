@@ -1,8 +1,12 @@
-FROM node:alpine
+# Build stage
+FROM arm64v8/node:alpine3.17
 
 WORKDIR /app
-COPY package.json .
-RUN npm install --omit=dev
-COPY . .
 
-CMD ["npm", "start"]
+COPY package.json package-lock.json .
+
+RUN npm install --omit=dev --frozen-lockfile
+
+COPY /dist ./dist
+
+CMD ["node", "./dist/index.js"]
