@@ -7,35 +7,35 @@ spec:
   entryPoints:
     - web
   routes:
-    - match: Host(`rancher.twiceb.dev`) && PathPrefix(`/api/payments`)
+    - match: Host(`ticketing.twiceb.dev`) && PathPrefix(`/api/payments`)
       kind: Rule
       services:
         - name: payments-srv
           port: 3000
       middlewares:
         - name: forward-headers
-    - match: Host(`rancher.twiceb.dev`) && PathPrefix(`/api/users`)
+    - match: Host(`ticketing.twiceb.dev`) && PathPrefix(`/api/users`)
       kind: Rule
       services:
         - name: auth-srv
           port: 3000
       middlewares:
         - name: forward-headers
-    - match: Host(`rancher.twiceb.dev`) && PathPrefix(`/api/tickets`)
+    - match: Host(`ticketing.twiceb.dev`) && PathPrefix(`/api/tickets`)
       kind: Rule
       services:
         - name: tickets-srv
           port: 3000
       middlewares:
         - name: forward-headers
-    - match: Host(`rancher.twiceb.dev`) && PathPrefix(`/api/orders`)
+    - match: Host(`ticketing.twiceb.dev`) && PathPrefix(`/api/orders`)
       kind: Rule
       services:
         - name: orders-srv
           port: 3000
       middlewares:
         - name: forward-headers
-    - match: Host(`rancher.twiceb.dev`)
+    - match: Host(`ticketing.twiceb.dev`)
       kind: Rule
       services:
         - name: client-srv

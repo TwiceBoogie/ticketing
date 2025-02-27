@@ -1,29 +1,32 @@
-apiVersion: skaffold/v2alpha3
+apiVersion: skaffold/v4beta12
 kind: Config
 deploy:
   kubectl:
-    manifests:
-      - ./infra/k8s/*
+    defaultNamespace: development
 build:
   local:
     push: false
   artifacts:
     - image: twiceboogie13/auth
-      context: auth
+      context: .
       docker:
-        dockerfile: Dockerfile
+        dockerfile: auth/Dockerfile
       sync:
         manual:
           - src: "src/**/*.ts"
             dest: .
     - image: twiceboogie13/client
-      context: client
+      context: web
       docker:
         dockerfile: Dockerfile
       sync:
         manual:
-          - src: "**/*.js"
-            dest: .
+          - src: "**/*.ts"
+            dest: /app
+          - src: "**/*.tsx"
+            dest: /app
+          - src: "**/*.css"
+            dest: /app
     - image: twiceboogie13/tickets
       context: tickets
       docker:
@@ -56,11 +59,21 @@ build:
         manual:
           - src: "src/**/*.ts"
             dest: .
-    - image: twiceboogie13/api-gateway
-      context: api-gateway
-      docker:
-        dockerfile: Dockerfile
-      sync:
-        manual:
-          - src: "src/**/*.ts"
-            dest: .
+
+manifests:
+  rawYaml:
+    - ./infra/k8s/jwt-secret.yaml
+    - ./infra/k8s/stripe-secret.yaml
+    - ./infra/k8s/auth-depl.yaml
+    - ./infra/k8s/auth-mongo-depl.yaml
+    - ./infra/k8s/client-depl.yaml
+    - ./infra/k8s/expiration-depl.yaml
+    - ./infra/k8s/expiration-redis-depl.yaml
+    - ./infra/k8s/ingress-srv.yaml
+    - ./infra/k8s/nats-depl.yaml
+    - ./infra/k8s/orders-depl.yaml
+    - ./infra/k8s/orders-mongo-depl.yaml
+    - ./infra/k8s/payments-depl.yaml
+    - ./infra/k8s/payments-mongo-depl.yaml
+    - ./infra/k8s/tickets-depl.yaml
+    - ./infra/k8s/tickets-mongo-depl.yaml

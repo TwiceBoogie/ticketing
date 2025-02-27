@@ -8,7 +8,9 @@ services:
       - proxy
   auth:
     container_name: auth
-    image: node:alpine
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
     volumes:
       - ./auth:/app
     working_dir: /app
@@ -24,7 +26,9 @@ services:
     command: ["npm", "start"]
   expiration:
     container_name: expiration
-    image: node:alpine
+    build:
+      context: ./expiration
+      dockerfile: Dockerfile
     volumes:
       - ./expiration:/app
     working_dir: /app
@@ -47,7 +51,7 @@ services:
       - proxy
   nats:
     container_name: nats
-    image: nats-streaming:0.17.0
+    image: nats-streaming
     command:
       - "-p"
       - "4222"
@@ -69,7 +73,9 @@ services:
       - proxy
   orders:
     container_name: orders
-    image: node:alpine
+    build:
+      context: ./orders
+      dockerfile: Dockerfile
     volumes:
       - ./orders:/app
     working_dir: /app
@@ -79,8 +85,8 @@ services:
       - NATS_CLUSTER_ID=ticketing
       - MONGO_URI=mongodb://mongodb:27017/orders
       - JWT_KEY=Random_Key_of_your_choice
-      - WEBHOOK_KEY=
-      - STRIPE_KEY=
+      - WEBHOOK_KEY=whsec_c13d0946bc88631d98bdbaa4ddf97a4cc2c07c8af4109751c9cfe0b7d8997544
+      - STRIPE_KEY=sk_test_51MEL0AGD9cK9NzsOAgqPPgZLdLXVfgHDYI1mkS7CpR2ODgUbXXMx7mq9qhgSx7D7OBHRAJ7mlfyBlBqcn0tBoTds008P6wpQ7P
     ports:
       - "3002:3000"
     networks:
@@ -90,7 +96,9 @@ services:
     command: ["npm", "start"]
   payments:
     container_name: payments
-    image: node:alpine
+    build:
+      context: ./payments
+      dockerfile: Dockerfile
     volumes:
       - ./payments:/app
     working_dir: /app
@@ -100,8 +108,8 @@ services:
       - NATS_CLUSTER_ID=ticketing
       - MONGO_URI=mongodb://mongodb:27017/payments
       - JWT_KEY=Random_Key_of_your_choice
-      - STRIPE_KEY=
-      - WEBHOOK_KEY=
+      - STRIPE_KEY=sk_test_51MEL0AGD9cK9NzsOAgqPPgZLdLXVfgHDYI1mkS7CpR2ODgUbXXMx7mq9qhgSx7D7OBHRAJ7mlfyBlBqcn0tBoTds008P6wpQ7P
+      - WEBHOOK_KEY=whsec_c13d0946bc88631d98bdbaa4ddf97a4cc2c07c8af4109751c9cfe0b7d8997544
     ports:
       - "3003:3000"
     networks:
@@ -111,7 +119,9 @@ services:
     command: ["npm", "start"]
   tickets:
     container_name: tickets
-    image: node:alpine
+    build:
+      context: ./tickets
+      dockerfile: Dockerfile
     volumes:
       - ./tickets:/app
     working_dir: /app
@@ -138,5 +148,5 @@ services:
 
 networks:
   proxy:
-    external:
-      name: proxy
+    external: true # 👈 Keep external as true
+
