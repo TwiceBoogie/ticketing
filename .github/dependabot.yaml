@@ -1,0 +1,10 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"  # Adjust if package.json is in a subfolder
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "@twicetickets/common"
+        versions: ["2.x"] # Ignore breaking major updates
