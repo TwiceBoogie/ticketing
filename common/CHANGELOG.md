@@ -1,3 +1,11 @@
+## [1.0.1](https://github.com/TwiceBoogie/ticketing/compare/v1.0.0...v1.0.1) (2025-03-01)
+
+
+### Bug Fixes
+
+* current-user.ts ([215a605](https://github.com/TwiceBoogie/ticketing/commit/215a60518f54406e25aa027d23c136064241ae24))
+* remove 'version' on package.json ([5e2d21c](https://github.com/TwiceBoogie/ticketing/commit/5e2d21c8b8ea27630409632665d78f6ce73f19f0))
+
 # 1.0.0 (2025-03-01)
 
 
