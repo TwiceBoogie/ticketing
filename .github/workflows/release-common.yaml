@@ -43,6 +43,11 @@ jobs:
         working-directory: ./common
         run: npm run build
         if: env.skip_build == 'false'  # Only run build if there are changes in /common/src
+      - name: Debug NPM_TOKEN
+        run: echo "NPM_TOKEN is set"
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
 
       - name: Run Semantic Release
         working-directory: ./common
