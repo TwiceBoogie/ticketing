@@ -1,3 +1,11 @@
+## [1.0.27](https://github.com/TwiceBoogie/ticketing/compare/v1.0.26...v1.0.27) (2025-03-01)
+
+
+### Bug Fixes
+
+* current-user decodes jwt ([9c5730c](https://github.com/TwiceBoogie/ticketing/commit/9c5730cda98c810318f5ba12bffc0c4769a3df6f))
+* testing ([4fb7de1](https://github.com/TwiceBoogie/ticketing/commit/4fb7de1c48025cf7fbfd4c9b7b9c1946397d99df))
+
 ## [1.0.1](https://github.com/TwiceBoogie/ticketing/compare/v1.0.0...v1.0.1) (2025-03-01)
 
 
