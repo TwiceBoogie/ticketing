@@ -24,7 +24,6 @@ export const currentUser = (
   }
 
   try {
-    // decode base64
     const session = JSON.parse(
       Buffer.from(req.cookies.session, "base64").toString("utf8")
     );
