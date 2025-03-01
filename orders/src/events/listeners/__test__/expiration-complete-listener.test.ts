@@ -6,6 +6,7 @@ import { natsWrapper } from "../../../nats-wrapper";
 import { Order } from "../../../models/order";
 import { Ticket } from "../../../models/ticket";
 
+// Setup function for creating data
 const setup = async () => {
   const listener = new ExpirationCompleteListener(natsWrapper.client);
 
@@ -15,6 +16,7 @@ const setup = async () => {
     price: 20,
   });
   await ticket.save();
+
   const order = Order.build({
     status: OrderStatus.Created,
     userId: "alskdfj",
@@ -23,11 +25,13 @@ const setup = async () => {
   });
   await order.save();
 
+  // Update this with the required `sessionId` property
   const data: ExpirationCompleteEvent["data"] = {
     orderId: order.id,
+    sessionId: new mongoose.Types.ObjectId().toHexString(), // Ensure sessionId is included
   };
 
-  // @ts-ignore
+  //@ts-ignore
   const msg: Message = {
     ack: jest.fn(),
   };
@@ -38,6 +42,7 @@ const setup = async () => {
 it("updates the order status to cancelled", async () => {
   const { listener, order, data, msg } = await setup();
 
+  // Call the listener with the data and message
   await listener.onMessage(data, msg);
 
   const updatedOrder = await Order.findById(order.id);
@@ -47,10 +52,13 @@ it("updates the order status to cancelled", async () => {
 it("emit an OrderCancelled event", async () => {
   const { listener, order, data, msg } = await setup();
 
+  // Call the listener with the data and message
   await listener.onMessage(data, msg);
 
+  // Check that the event was published
   expect(natsWrapper.client.publish).toHaveBeenCalled();
 
+  // Get the event data
   const eventData = JSON.parse(
     (natsWrapper.client.publish as jest.Mock).mock.calls[0][1]
   );
@@ -60,7 +68,9 @@ it("emit an OrderCancelled event", async () => {
 it("ack the message", async () => {
   const { listener, data, msg } = await setup();
 
+  // Call the listener with the data and message
   await listener.onMessage(data, msg);
 
+  // Ensure that the message was acknowledged
   expect(msg.ack).toHaveBeenCalled();
 });

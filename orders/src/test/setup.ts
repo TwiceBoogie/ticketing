@@ -3,57 +3,66 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 
 declare global {
-  var signin: () => string[];
+  var signin: () => string[]; // Explicitly type the return type
 }
 
 jest.mock("../nats-wrapper");
+jest.mock("../stripe");
 
 let mongo: any;
 beforeAll(async () => {
-  process.env.JWT_KEY = "asdfasdf";
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-  const mongo = await MongoMemoryServer.create();
+  // Create an in-memory MongoDB server
+  mongo = await MongoMemoryServer.create();
   const mongoUri = mongo.getUri();
 
+  // Connect to the in-memory MongoDB instance
   await mongoose.connect(mongoUri, {});
 });
 
 beforeEach(async () => {
-  jest.clearAllMocks();
-  const collections = await mongoose.connection.db.collections();
+  jest.clearAllMocks(); // Clear mocks to reset any spy or mock function
 
-  for (let collection of collections) {
-    await collection.deleteMany({});
+  // Safely check if mongoose.connection.db is available
+  const collections = await mongoose.connection.db?.collections();
+  if (collections) {
+    // Delete all documents from each collection for a clean slate
+    for (let collection of collections) {
+      await collection.deleteMany({});
+    }
+  } else {
+    console.error("Mongoose connection db is undefined");
   }
 });
 
 afterAll(async () => {
   if (mongo) {
+    // Stop the in-memory MongoDB instance and close the Mongoose connection
     await mongo.stop();
   }
-  await mongoose.connection.close();
+  await mongoose.connection.close(); // Close the Mongoose connection
 });
 
-global.signin = () => {
+global.signin = (): string[] => {
   // Build a JWT payload.  { id, email }
   const payload = {
     id: new mongoose.Types.ObjectId().toHexString(),
     email: "test@test.com",
   };
 
-  // Create the JWT!
+  // Create the JWT using the JWT_KEY environment variable
   const token = jwt.sign(payload, process.env.JWT_KEY!);
 
-  // Build session Object. { jwt: MY_JWT }
+  // Build session object. { jwt: MY_JWT }
   const session = { jwt: token };
 
-  // Turn that session into JSON
+  // Turn the session object into a JSON string
   const sessionJSON = JSON.stringify(session);
 
-  // Take JSON and encode it as base64
+  // Encode the session JSON as base64
   const base64 = Buffer.from(sessionJSON).toString("base64");
 
-  // return a string thats the cookie with the encoded data
+  // Return the session cookie as an array
   return [`session=${base64}`];
 };
