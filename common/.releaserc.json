@@ -1,5 +1,6 @@
 {
     "branches": ["common/main"],
+    "tagFormat": "common-v${version}",
     "plugins": [
       "@semantic-release/commit-analyzer",
       "@semantic-release/release-notes-generator",
@@ -16,7 +17,6 @@
           "assets": ["package.json", "CHANGELOG.md"],
           "message": "chore(release): publish new version ${nextRelease.version} [skip ci]"
         }
-      ],
-      "@semantic-release/github"
+      ]
     ]
   }
