@@ -27,9 +27,6 @@ export const currentUser = (
     const session = JSON.parse(
       Buffer.from(req.cookies.session, "base64").toString("utf8")
     );
-    if (!session.jwt) {
-      return next();
-    }
 
     const payload = jwt.verify(
       session.jwt,
