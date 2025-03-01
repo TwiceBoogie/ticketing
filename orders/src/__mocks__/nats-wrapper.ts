@@ -7,5 +7,6 @@ export const natsWrapper = {
           callback();
         }
       ),
+    connect: jest.fn().mockResolvedValue(true),
   },
 };
