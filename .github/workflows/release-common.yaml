@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - common/main
-  pull_request:
-    branches:
-      - common/main
 
 jobs:
   release:
