@@ -31,6 +31,15 @@ jobs:
             echo "skip_build=false" >> $GITHUB_ENV
           fi
 
+      - name: Ensure package-lock.json exists
+        working-directory: ./common
+        run: |
+          if [ ! -f package-lock.json ]; then
+            echo "package-lock.json is missing. Running npm install to generate it..."
+            npm install
+          fi
+        if: env.skip_build == 'false'
+
       - name: Install dependencies
         working-directory: ./common
         run: npm ci
