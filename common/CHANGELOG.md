@@ -1,0 +1,24 @@
+## [1.0.27](https://github.com/TwiceBoogie/ticketing/compare/v1.0.26...v1.0.27) (2025-03-01)
+
+
+### Bug Fixes
+
+* current-user decodes jwt ([9c5730c](https://github.com/TwiceBoogie/ticketing/commit/9c5730cda98c810318f5ba12bffc0c4769a3df6f))
+* testing ([4fb7de1](https://github.com/TwiceBoogie/ticketing/commit/4fb7de1c48025cf7fbfd4c9b7b9c1946397d99df))
+
+## [1.0.1](https://github.com/TwiceBoogie/ticketing/compare/v1.0.0...v1.0.1) (2025-03-01)
+
+
+### Bug Fixes
+
+* current-user.ts ([215a605](https://github.com/TwiceBoogie/ticketing/commit/215a60518f54406e25aa027d23c136064241ae24))
+* remove 'version' on package.json ([5e2d21c](https://github.com/TwiceBoogie/ticketing/commit/5e2d21c8b8ea27630409632665d78f6ce73f19f0))
+
+# 1.0.0 (2025-03-01)
+
+
+### Bug Fixes
+
+* changes on current-user ([7648bc8](https://github.com/TwiceBoogie/ticketing/commit/7648bc826ecac06843d8ab85031e43f60e5e03c8))
+* changes on current-user ([9be48e6](https://github.com/TwiceBoogie/ticketing/commit/9be48e6d83509d326518a5fef1fa214de0839568))
+* current-user ([41a3404](https://github.com/TwiceBoogie/ticketing/commit/41a3404230929cd4ec834d55528c730176a70f30))

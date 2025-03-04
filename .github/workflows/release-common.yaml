@@ -1,0 +1,49 @@
+name: Release Common Package
+
+on:
+  push:
+    branches:
+      - common/main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+
+      - name: Check for changes in /common/src
+        id: check_changes
+        run: |
+          git fetch --prune --unshallow
+          # Check if there are changes in /common/src directory
+          if git diff --quiet HEAD^ HEAD -- common/src; then
+            echo "No changes in /common/src. Skipping build and release."
+            echo "skip_build=true" >> $GITHUB_ENV
+          else
+            echo "Changes detected in /common/src. Proceeding with build and release."
+            echo "skip_build=false" >> $GITHUB_ENV
+          fi
+
+      - name: Install dependencies
+        working-directory: ./common
+        run: npm ci
+        if: env.skip_build == 'false'  # Only install dependencies if building
+
+      - name: Build the project
+        working-directory: ./common
+        run: npm run build
+        if: env.skip_build == 'false'  # Only run build if there are changes in /common/src
+
+      - name: Run Semantic Release
+        working-directory: ./common
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release
+        if: env.skip_build == 'false'  # Only run semantic-release if build happened
