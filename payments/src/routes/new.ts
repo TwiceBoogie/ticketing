@@ -1,5 +1,4 @@
-import express, { Request, Response } from "express";
-
+import express, { Request, Response, NextFunction } from "express";
 import { stripe } from "../stripe";
 import { Order } from "../models/order";
 import { Payment } from "../models/payment";
@@ -9,130 +8,83 @@ import { natsWrapper } from "../nats-wrapper";
 const router = express.Router();
 const endpointSecret = process.env.WEBHOOK_KEY!;
 
-router.post(
-  "/api/webhook",
-  express.raw({ type: "application/json" }),
-  async (req: Request, res: Response) => {
+router.post("/api/webhook", (async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
     const sig = req.headers["stripe-signature"];
 
     if (!sig) {
-      return res.redirect(`${process.env.REDIRECT_USER!}`);
-    }
-
-    let event;
-
-    try {
-      event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-    } catch (err) {
-      console.log(`Webhook Error: ${err}`);
+      res.status(400).send({ error: "Missing Stripe signature" });
       return;
     }
 
-    // Handle the event
+    const event = stripe.webhooks.constructEvent(
+      JSON.stringify(req.body),
+      sig,
+      endpointSecret
+    );
+
+    console.log(`Received event: ${event.type}`);
+
     switch (event.type) {
-      case "checkout.session.completed":
+      case "checkout.session.completed": {
         const checkoutSessionCompleted = event.data.object;
         console.log(checkoutSessionCompleted, 3);
-        // Then define and call a function to handle the event checkout.session.completed
+
         if (checkoutSessionCompleted.metadata) {
           const order = await Order.findById(
             checkoutSessionCompleted.metadata.orderId
           );
+
+          if (!order) {
+            console.error("Order not found for webhook event.");
+            res.status(404).send({ error: "Order not found." });
+            return;
+          }
+
           const payment = Payment.build({
-            orderId: order?.id,
+            orderId: order.id,
             stripeId: checkoutSessionCompleted.id,
           });
           await payment.save();
-          new PaymentCreatedPublisher(natsWrapper.client).publish({
+
+          await new PaymentCreatedPublisher(natsWrapper.client).publish({
             id: payment.id,
             orderId: payment.orderId,
             stripeId: payment.stripeId,
           });
+
+          console.log("✅ Payment processed successfully.");
         }
-        break;
+
+        res.status(200).send({ received: true });
+        return;
+      }
+
       case "checkout.session.expired":
-        const checkoutSessionExpired = event.data.object;
-        console.log(checkoutSessionExpired, 4);
-        // Then define and call a function to handle the event checkout.session.expired
-        break;
-      case "payment_intent.amount_capturable_updated":
-        const paymentIntentAmountCapturableUpdated = event.data.object;
-        console.log(paymentIntentAmountCapturableUpdated, 5);
-        // Then define and call a function to handle the event payment_intent.amount_capturable_updated
-        break;
-      case "payment_intent.canceled":
-        const paymentIntentCanceled = event.data.object;
-        console.log(paymentIntentCanceled, 6);
-        // Then define and call a function to handle the event payment_intent.canceled
-        break;
-      case "payment_intent.created":
-        const paymentIntentCreated = event.data.object;
-        console.log(paymentIntentCreated, 7);
-        // Then define and call a function to handle the event payment_intent.created
-        break;
-      case "payment_intent.partially_funded":
-        const paymentIntentPartiallyFunded = event.data.object;
-        console.log(paymentIntentPartiallyFunded, 8);
-        // Then define and call a function to handle the event payment_intent.partially_funded
-        break;
-      case "payment_intent.payment_failed":
-        const paymentIntentPaymentFailed = event.data.object;
-        console.log(paymentIntentPaymentFailed, 9);
-        // Then define and call a function to handle the event payment_intent.payment_failed
-        break;
-      case "payment_intent.processing":
-        const paymentIntentProcessing = event.data.object;
-        console.log(paymentIntentProcessing, 10);
-        // Then define and call a function to handle the event payment_intent.processing
-        break;
-      case "payment_intent.requires_action":
-        const paymentIntentRequiresAction = event.data.object;
-        console.log(paymentIntentRequiresAction, 11);
-        // Then define and call a function to handle the event payment_intent.requires_action
-        break;
+        console.log("Session expired:", event.data.object);
+        res.status(200).send({ message: "Session expired." });
+        return;
+
       case "payment_intent.succeeded":
-        const paymentIntentSucceeded = event.data.object;
-        console.log(paymentIntentSucceeded, 12);
-        // Then define and call a function to handle the event payment_intent.succeeded
-        break;
-      // ... handle other event types
+        console.log("Payment succeeded:", event.data.object);
+        res.status(200).send({ message: "Payment succeeded." });
+        return;
+
       default:
-        console.log(`Unhandled event type ${event.type}`);
+        console.log(`Unhandled event type: ${event.type}`);
+        res.status(400).send({ error: `Unhandled event type: ${event.type}` });
+        return;
     }
-    // const { token, orderId } = req.body;
-
-    // const order = await Order.findById(orderId);
-
-    // if (!order) {
-    //   throw new NotFoundError();
-    // }
-    // if (order.userId !== req.currentUser!.id) {
-    //   throw new NotAuthorizedError();
-    // }
-    // if (order.status === OrderStatus.Cancelled) {
-    //   throw new BadRequestError("Cannot pay for an cancelled order");
-    // }
-
-    // const charge = await stripe.charges.create({
-    //   currency: "usd",
-    //   amount: order.price * 100,
-    //   source: token,
-    // });
-
-    // const payment = Payment.build({
-    //   orderId,
-    //   stripeId: charge.id,
-    // });
-    // await payment.save();
-    // new PaymentCreatedPublisher(natsWrapper.client).publish({
-    //   id: payment.id,
-    //   orderId: payment.orderId,
-    //   stripeId: payment.stripeId,
-    // });
-
-    // res.status(201).send({ id: payment.id });
-    return res.send();
+  } catch (err) {
+    console.error(
+      `Webhook Error: ${err instanceof Error ? err.message : "Unknown error"}`
+    );
+    next(err); // Use Express error handler
   }
-);
+}) as express.RequestHandler);
 
 export { router as createChargeRouter };

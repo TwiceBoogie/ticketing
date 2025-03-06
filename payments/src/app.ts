@@ -1,4 +1,4 @@
-import express from "express";
+import express, { json } from "express";
 import "express-async-errors";
 
 import { errorHandler } from "@twicetickets/common";
@@ -6,7 +6,7 @@ import { createChargeRouter } from "./routes/new";
 
 const app = express();
 app.set("trust proxy", true);
-
+app.use(json());
 app.use((req, res, next) => {
   console.log(`Received request: ${req.method} ${req.url}`);
   next();

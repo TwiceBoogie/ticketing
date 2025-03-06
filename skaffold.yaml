@@ -8,9 +8,9 @@ build:
     push: false
   artifacts:
     - image: twiceboogie13/auth
-      context: .
+      context: auth
       docker:
-        dockerfile: auth/Dockerfile
+        dockerfile: Dockerfile
       sync:
         manual:
           - src: "src/**/*.ts"
@@ -21,12 +21,18 @@ build:
         dockerfile: Dockerfile
       sync:
         manual:
-          - src: "**/*.ts"
-            dest: /app
-          - src: "**/*.tsx"
-            dest: /app
-          - src: "**/*.css"
-            dest: /app
+          - src: "app/**/*.ts"
+            dest: .
+          - src: "app/**/*.tsx"
+            dest: .
+          - src: "app/**/*.css"
+            dest: .
+          - src: "public/**/*"
+            dest: .
+          - src: "*.ts"
+            dest: .
+          - src: "*.mjs"
+            dest: .
     - image: twiceboogie13/tickets
       context: tickets
       docker:
