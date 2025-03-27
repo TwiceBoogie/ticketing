@@ -4,6 +4,9 @@ import { Providers } from "./provider";
 
 import "@/styles/globals.css";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/constants/metadata";
+import { cn } from "@/helpers/common.helper";
+import Header from "@/components/ui/Header";
+import { Navigation } from "@/components/ui/Navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,11 +47,7 @@ export const metadata: Metadata = {
   ],
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
       <head>
@@ -71,7 +70,16 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <div className="h-screen w-full relative flex flex-col overflow-auto">
+            <Navigation />
+            {children}
+          </div>
+        </Providers>
+
+        {/* <div className={cn("h-screen w-full relative flex flex-col", "app-container")}>
+            <div className="w-full h-full relative">{children}</div>
+          </div> */}
       </body>
     </html>
   );

@@ -20,19 +20,7 @@ build:
       docker:
         dockerfile: Dockerfile
       sync:
-        manual:
-          - src: "app/**/*.ts"
-            dest: .
-          - src: "app/**/*.tsx"
-            dest: .
-          - src: "app/**/*.css"
-            dest: .
-          - src: "public/**/*"
-            dest: .
-          - src: "*.ts"
-            dest: .
-          - src: "*.mjs"
-            dest: .
+        infer: ["**/*"]
     - image: twiceboogie13/tickets
       context: tickets
       docker:

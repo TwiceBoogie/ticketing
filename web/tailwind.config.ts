@@ -16,6 +16,15 @@ export default {
         foreground: "var(--foreground)",
       },
     },
+    animation: {
+      "fade-in": "fade-in 250ms ease-in-out",
+    },
+    keyframes: {
+      "fade-in": {
+        "0%": { opacity: "0" },
+        "100%": { opacity: "1" },
+      },
+    },
   },
   darkMode: "class",
   plugins: [heroui()],

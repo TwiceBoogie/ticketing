@@ -1,12 +1,16 @@
-import ProviderClient from "./providerClient";
+"use server";
+
+import { cookies } from "next/headers";
 
 interface ICurrentUser {
   id: number;
   email: string;
 }
 
-async function getCurrentUser(): Promise<ICurrentUser | undefined> {
+export async function getCurrentUser(): Promise<ICurrentUser | undefined> {
   try {
+    const cookieStore = await cookies();
+    const jwtCookie = cookieStore.get("jwt");
     const res = await fetch("http://auth-srv:3000/api/users/currentuser", {
       method: "POST",
       credentials: "include",
@@ -20,14 +24,4 @@ async function getCurrentUser(): Promise<ICurrentUser | undefined> {
   } catch (error) {
     console.error("Failed to fetch current user:", error);
   }
-}
-
-export async function Providers({ children }: { children: React.ReactNode }) {
-  const currentUser = await getCurrentUser();
-
-  return (
-    <>
-      <ProviderClient currentUser={currentUser}>{children}</ProviderClient>
-    </>
-  );
 }
