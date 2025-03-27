@@ -1,3 +1,26 @@
+# 1.0.0 (2025-03-27)
+
+
+### Bug Fixes
+
+* change on current-user ([3ef1916](https://github.com/TwiceBoogie/ticketing/commit/3ef191690552144f58d969d154d9cfe8634314b3))
+* changed how cookie is consumed ([cf6802d](https://github.com/TwiceBoogie/ticketing/commit/cf6802d73d70df7c720d951f140cf06d6df20cce))
+* changes ([d45cf1c](https://github.com/TwiceBoogie/ticketing/commit/d45cf1ce5f02e4cef6e82bfebd982acc7de09eae))
+* changes again ([73a502b](https://github.com/TwiceBoogie/ticketing/commit/73a502b58d366f288a6a6bab4563f0ae885df5d6))
+* changes on current-user ([9799ae3](https://github.com/TwiceBoogie/ticketing/commit/9799ae3f19b80b2724c77498ab5d79b3a54b7d89))
+* changes on current-user ([4945c08](https://github.com/TwiceBoogie/ticketing/commit/4945c087a21b83b5494421d63bcac1b14dc8acc8))
+* changes on orders type errors and others dockerignore ([7a24bb6](https://github.com/TwiceBoogie/ticketing/commit/7a24bb63ef40992f15f071711f24687c1d1fdfe4))
+* checking changes ([c8fec3b](https://github.com/TwiceBoogie/ticketing/commit/c8fec3be598f433f8e4b462b05280809b8fb826e))
+* current-user ([5ce5e76](https://github.com/TwiceBoogie/ticketing/commit/5ce5e76f66c6f4a57fd77a0f4985d851f6548fcc))
+* current-user decodes jwt ([9d27e35](https://github.com/TwiceBoogie/ticketing/commit/9d27e3581ce80c1c0c84165b961543c2736a130c))
+* current-user.ts ([f36e83b](https://github.com/TwiceBoogie/ticketing/commit/f36e83bdd23329b62833da9666e21e5085baecda))
+* current-user.ts ([0a674aa](https://github.com/TwiceBoogie/ticketing/commit/0a674aaed3183e46ed5c4c9c7d03db3fd9e1956c))
+* remove 'version' on package.json ([093ad2c](https://github.com/TwiceBoogie/ticketing/commit/093ad2c7657637771be82ce8d89fd1e9e589b195))
+* resovle merge conflicts for package-lock.json ([fe14c1e](https://github.com/TwiceBoogie/ticketing/commit/fe14c1e2267e240f0adccda5d5afe30272d6f2a7))
+* test on orders service ([1d47212](https://github.com/TwiceBoogie/ticketing/commit/1d472126a0a6772773a2eb5f6d69ebf2db1428dc))
+* testing ([a621c77](https://github.com/TwiceBoogie/ticketing/commit/a621c773b0ea99bf03e6b207f1d293445ed3360c))
+* workflow now has package-lock for npm ci ([2f63fd7](https://github.com/TwiceBoogie/ticketing/commit/2f63fd72e72ffed4a5c20ba19a6b6adcf5dec173))
+
 ## [1.0.1](https://github.com/TwiceBoogie/ticketing/compare/v1.0.0...v1.0.1) (2025-03-27)
 
 
