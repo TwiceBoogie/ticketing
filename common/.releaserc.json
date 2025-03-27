@@ -8,8 +8,7 @@
       [
         "@semantic-release/npm",
         {
-          "npmPublish": true,
-          "ignoreVersion": true
+          "npmPublish": true
         }
       ],
       [

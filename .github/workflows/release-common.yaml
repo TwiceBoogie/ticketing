@@ -49,6 +49,15 @@ jobs:
         working-directory: ./common
         run: npm run build
         if: env.skip_build == 'false'  # Only run build if there are changes in /common/src
+        
+      - name: Force Tag Sync
+        run: |
+          git fetch --tags --force
+          echo "Current tags:"
+          git tag -l | sort -V
+          echo "Forcing tag detection..."
+          git checkout -b temp-force-tag v1.0.27
+          git checkout common/main
 
       - name: Run Semantic Release
         working-directory: ./common
