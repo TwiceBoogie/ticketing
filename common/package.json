@@ -8,8 +8,7 @@
   ],
   "scripts": {
     "clean": "rm -rf ./build/* || del-cli ./build/*",
-    "build": "npm run clean && tsc",
-    "publish": "git add . && git commit -m \"Updates\" && npm version patch && npm run build && npm publish"
+    "build": "npm run clean && tsc"
   },
   "keywords": [],
   "author": "",
@@ -28,5 +27,5 @@
     "jsonwebtoken": "^9.0.2",
     "node-nats-streaming": "^0.3.2"
   },
-  "version": "1.0.30"
+  "version": "1.0.31"
 }
