@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -49,6 +51,9 @@ jobs:
         working-directory: ./common
         run: npm run build
         if: env.skip_build == 'false'  # Only run build if there are changes in /common/src
+      
+      - name: Verify Tags
+        run: git tag -l | sort -V
 
       - name: Run Semantic Release
         working-directory: ./common
