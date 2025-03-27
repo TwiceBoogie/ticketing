@@ -1,3 +1,11 @@
+## [1.0.1](https://github.com/TwiceBoogie/ticketing/compare/v1.0.0...v1.0.1) (2025-03-27)
+
+
+### Bug Fixes
+
+* change on current-user ([3ef1916](https://github.com/TwiceBoogie/ticketing/commit/3ef191690552144f58d969d154d9cfe8634314b3))
+* changes ([d45cf1c](https://github.com/TwiceBoogie/ticketing/commit/d45cf1ce5f02e4cef6e82bfebd982acc7de09eae))
+
 # 1.0.0 (2025-03-27)
 
 
