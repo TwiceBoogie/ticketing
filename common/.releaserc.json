@@ -9,7 +9,8 @@
         "@semantic-release/npm",
         {
           "npmPublish": true,
-          "ignoreNpmRegistry": true
+          "pkgRoot": "./common",
+          "ignoreVersion": true
         }
       ],
       [
