@@ -24,13 +24,8 @@ export const currentUser = (
   }
 
   try {
-    // change
-    const session = JSON.parse(
-      Buffer.from(req.cookies.session, "base64").toString("utf8")
-    );
-
     const payload = jwt.verify(
-      session.jwt,
+      req.session.jwt,
       process.env.JWT_KEY!
     ) as UserPayload;
     req.currentUser = payload;
