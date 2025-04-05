@@ -18,9 +18,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@twicetickets/common": "^1.0.31",
+    "@twicetickets/common": "file:../common",
     "@types/bull": "^4.10.4",
     "bull": "^4.16.5",
+    "dotenv": "^16.4.7",
     "node-nats-streaming": "^0.3.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.7.3"

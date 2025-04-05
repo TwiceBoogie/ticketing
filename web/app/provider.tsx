@@ -1,4 +1,6 @@
+import { SERVICES } from "@/constants/serverUrls";
 import ProviderClient from "./providerClient";
+import { cookies } from "next/headers";
 
 interface ICurrentUser {
   id: number;
@@ -7,11 +9,12 @@ interface ICurrentUser {
 
 async function getCurrentUser(): Promise<ICurrentUser | undefined> {
   try {
-    const res = await fetch("http://auth-srv:3000/api/users/currentuser", {
-      method: "POST",
-      credentials: "include",
+    const jwt = (await cookies()).get("jwt")?.value;
+    const res = await fetch(`${SERVICES.auth}/api/users/currentuser`, {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Cookie: `jwt=${jwt}`,
       },
     });
 
@@ -19,6 +22,7 @@ async function getCurrentUser(): Promise<ICurrentUser | undefined> {
     return res.json();
   } catch (error) {
     console.error("Failed to fetch current user:", error);
+    return undefined;
   }
 }
 

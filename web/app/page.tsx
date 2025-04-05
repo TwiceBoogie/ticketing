@@ -1,3 +1,4 @@
+import { SERVICES } from "@/constants/serverUrls";
 import Link from "next/link";
 
 interface ITickets {
@@ -8,12 +9,17 @@ interface ITickets {
 
 async function getTickets(): Promise<ITickets[] | undefined> {
   try {
-    const res = await fetch("http://tickets-srv:3000/api/tickets", {
+    const res = await fetch(`${SERVICES.tickets}/api/tickets`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
+      next: {
+        tags: ["tickets"],
+      },
     });
+
+    console.log(`[getTickets] fetched at ${new Date().toISOString()}`);
 
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     return res.json();

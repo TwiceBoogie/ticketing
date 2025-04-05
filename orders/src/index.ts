@@ -1,3 +1,4 @@
+import "dotenv";
 import mongoose from "mongoose";
 
 import { app } from "./app";
@@ -30,10 +31,7 @@ const start = async () => {
       process.env.NATS_CLIENT_ID,
       process.env.NATS_URL
     );
-    natsWrapper.client.on("close", () => {
-      console.log("NATS connection closed!");
-      process.exit();
-    });
+
     process.on("SIGINT", () => natsWrapper.client.close());
     process.on("SIGTERM", () => natsWrapper.client.close());
 
@@ -46,10 +44,11 @@ const start = async () => {
     console.log("Connected to MongoDb");
   } catch (err) {
     console.error(err);
+    process.exit(1);
   }
 
-  app.listen(3000, () => {
-    console.log("Listening on port 3000!!!!!!!!");
+  app.listen(process.env.SERVER_HOST || 3000, () => {
+    console.log(`Listening on port ${process.env.SERVER_HOST || 3000}!!!!!!!!`);
   });
 };
 
