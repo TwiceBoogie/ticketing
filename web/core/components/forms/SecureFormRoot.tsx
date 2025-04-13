@@ -44,6 +44,7 @@ export function SecureFormRoot<TFieldNames extends string, TResult>({
   };
 
   useEffect(() => {
+    console.log("inside useEffect()");
     if (state && !state.ok) {
       setTouched(defaultTouched);
       const formError = state.error.find((e) => e.field === "form");
@@ -56,8 +57,8 @@ export function SecureFormRoot<TFieldNames extends string, TResult>({
       }
     }
     if (state && state.ok) {
-      onSuccess?.(state.data);
       setTouched(defaultTouched);
+      onSuccess?.(state.data);
     }
   }, [state]);
   return (

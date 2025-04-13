@@ -6,7 +6,12 @@ import { EAuthModes } from "@/helpers/authentication.helper";
 import { CsrfProvider } from "@/components/forms/CsrfProvider";
 import { AuthForm } from "@/components/forms/AuthForm";
 
-export default async function Login() {
+export default async function Login({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { next_path } = await searchParams;
   return (
     <DefaultLayout>
       <div className="flex flex-1 flex-col justify-center px-6 lg:px-8">
@@ -17,7 +22,7 @@ export default async function Login() {
         </div>
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <CsrfProvider>
-            <AuthForm authMode={EAuthModes.SIGN_IN} />
+            <AuthForm authMode={EAuthModes.SIGN_IN} nextPath={next_path as string} />
           </CsrfProvider>
         </div>
       </div>

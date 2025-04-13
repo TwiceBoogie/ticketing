@@ -2,9 +2,13 @@
   "name": "expiration",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "ts-node-dev src/index.ts",
+    "dev": "ts-node-dev src/index.ts",
+    "clean": "rimraf ./dist",
+    "clean:all": "rimraf ./dist && rm -rf node_modules",
+    "build": "npm run clean && tsc",
+    "start": "node dist/index.js",
     "test": "jest --watchAll --no-cache"
   },
   "jest": {
@@ -19,16 +23,17 @@
   "license": "ISC",
   "dependencies": {
     "@twicetickets/common": "file:../common",
-    "@types/bull": "^4.10.4",
     "bull": "^4.16.5",
     "dotenv": "^16.4.7",
-    "node-nats-streaming": "^0.3.2",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.7.3"
+    "node-nats-streaming": "^0.3.2"
   },
   "devDependencies": {
+    "@types/bull": "^3.15.9",
     "@types/jest": "^29.5.14",
-    "jests": "^0.0.0",
-    "ts-jest": "^29.2.6"
+    "jest": "^29.7.0",
+    "rimraf": "^6.0.1",
+    "ts-jest": "^29.2.6",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3"
   }
 }

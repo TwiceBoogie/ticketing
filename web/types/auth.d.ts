@@ -3,7 +3,7 @@ export interface ICsrfTokenData {
 }
 
 export interface ICurrentUser {
-  id: number;
+  id: string;
   email: string;
 }
 

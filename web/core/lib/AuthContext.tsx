@@ -10,7 +10,13 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>(null!);
 
-export function AuthProvider({ children, initialUser }: { children: React.ReactNode; initialUser?: ICurrentUser }) {
+export function AuthProvider({
+  children,
+  initialUser,
+}: {
+  children: React.ReactNode;
+  initialUser: ICurrentUser | null;
+}) {
   const [user, setUser] = useState(initialUser || null);
 
   return <AuthContext.Provider value={{ user, setUser }}>{children}</AuthContext.Provider>;

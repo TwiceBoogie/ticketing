@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
   // prevents site from being embedded in an iframe on another domain (clickjacking attack)
   async headers() {
     return [

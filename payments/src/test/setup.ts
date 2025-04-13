@@ -7,9 +7,7 @@ declare global {
 }
 
 jest.mock("../nats-wrapper");
-
-process.env.STRIPE_KEY =
-  "sk_test_51MEL0AGD9cK9NzsOAgqPPgZLdLXVfgHDYI1mkS7CpR2ODgUbXXMx7mq9qhgSx7D7OBHRAJ7mlfyBlBqcn0tBoTds008P6wpQ7P";
+jest.mock("../stripe-client");
 
 let mongo: any;
 beforeAll(async () => {
@@ -24,10 +22,16 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   jest.clearAllMocks();
-  const collections = await mongoose.connection.db.collections();
+  const collections = await mongoose.connection.db?.collections();
 
-  for (let collection of collections) {
-    await collection.deleteMany({});
+  if (collections) {
+    for (let collection of collections) {
+      await collection.deleteMany({});
+    }
+  } else {
+    console.error(
+      "Failed to access collections: mongoose.connection.db is undefined"
+    );
   }
 });
 

@@ -10,6 +10,7 @@ jest.mock("../nats-wrapper");
 
 let mongo: any;
 beforeAll(async () => {
+  process.env.NODE_ENV = "test";
   process.env.JWT_KEY = "asdfasdf";
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -21,10 +22,17 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   jest.clearAllMocks();
-  const collections = await mongoose.connection.db.collections();
+  const collections = await mongoose.connection.db?.collections();
 
-  for (let collection of collections) {
-    await collection.deleteMany({});
+  // Check if collections is undefined
+  if (collections) {
+    for (let collection of collections) {
+      await collection.deleteMany({});
+    }
+  } else {
+    console.error(
+      "Failed to access collections: mongoose.connection.db is undefined"
+    );
   }
 });
 

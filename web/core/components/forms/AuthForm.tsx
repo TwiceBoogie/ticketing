@@ -1,8 +1,10 @@
 "use client";
 
-import React from "react";
-import { useRouter } from "next/router";
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Input } from "@heroui/input";
+import { Button } from "@heroui/button";
+import { addToast } from "@heroui/toast";
 
 import { useAuth } from "@/lib/AuthContext";
 import { SecureFormRoot } from "./SecureFormRoot";
@@ -10,25 +12,38 @@ import { EAuthModes } from "@/helpers/authentication.helper";
 import { IAuthResponse } from "@/types/auth";
 import { signInAction } from "@/actions/signInAction";
 import { signUpAction } from "@/actions/signUpAction";
-import { Button } from "@heroui/react";
 
 type TAuthRoot = {
   authMode: EAuthModes;
+  nextPath?: string;
 };
 
 export function AuthForm(props: TAuthRoot) {
-  const { authMode } = props;
-  const action = authMode === "SIGN_IN" ? signInAction : signUpAction;
+  const { authMode, nextPath } = props;
   const { setUser } = useAuth();
   const router = useRouter();
+  // works the first time but if you try again and get redirect here with next_path, it won't show
+  // useEffect(() => {
+  //   if (nextPath && typeof window !== "undefined") {
+  //     const toastShownKey = "__auth_redirect_toast_shown";
+  //     if (!sessionStorage.getItem(toastShownKey)) {
+  //       addToast({
+  //         title: "Must be authenticated",
+  //         color: "warning",
+  //       });
+  //       sessionStorage.setItem(toastShownKey, "true");
+  //     }
+  //   }
+  // }, [nextPath]);
 
   return (
     <SecureFormRoot<"email" | "password", IAuthResponse>
-      action={action}
+      action={authMode === "SIGN_IN" ? signInAction : signUpAction}
       defaultTouched={{ email: false, password: false }}
       onSuccess={(data) => {
+        console.log(data);
         setUser(data);
-        router.push("/");
+        router.replace(nextPath ?? "/");
       }}
     >
       {({ getError, handleInputChange, touched, isPending }) => (

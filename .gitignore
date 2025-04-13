@@ -25,3 +25,4 @@ package-lock.json
 **/pnpm-lock.yaml
 client/
 docker-compose.yaml
+.vscode

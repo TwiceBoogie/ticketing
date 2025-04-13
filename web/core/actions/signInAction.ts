@@ -12,6 +12,7 @@ import { z } from "zod";
 
 export async function signInAction(prevState: any, formData: FormData): Promise<Result<IAuthResponse, FieldError[]>> {
   try {
+    console.log("form sent to server");
     await validateCsrfToken(formData.get("csrfToken"));
     const validateFields = loginSchema.parse({
       email: formData.get("email"),
@@ -20,7 +21,6 @@ export async function signInAction(prevState: any, formData: FormData): Promise<
 
     const res = await fetch(`${SERVICES.auth}/api/users/signin`, {
       method: "POST",
-      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },

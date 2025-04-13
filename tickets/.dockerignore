@@ -1,9 +1,28 @@
+# Node modules and logs
 node_modules
-package-lock.json
 npm-debug.log
-yarn.lock
+yarn-debug.log
+yarn-error.log
+
+# Build output
 dist
 build
 coverage
+
+# Dependency lock files (optional but recommended if not used directly)
+package-lock.json
+yarn.lock
+
+# Test files
+**/__tests__/**
+**/*.test.js
+**/*.test.ts
+**/*.spec.js
+**/*.spec.ts
+**/__mocks__/**
+
+# Local environment variables
 .env
+
+# Mac OS metadata
 .DS_Store

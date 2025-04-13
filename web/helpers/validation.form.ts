@@ -30,3 +30,12 @@ export const ticketFormSchema = z.object({
 
 // You can use this type in your action
 export type TicketFormValues = z.infer<typeof ticketFormSchema>;
+
+export const orderTicketSchema = z.object({
+  ticketId: z
+    .string()
+    .length(24, "Invalid ticket ID")
+    .regex(/^[a-f0-9]{24}$/, "Invalid format"),
+});
+
+export type OrderTicketSchema = z.infer<typeof orderTicketSchema>;

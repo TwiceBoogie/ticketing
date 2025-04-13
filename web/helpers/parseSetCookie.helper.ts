@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 
 export async function clearJwtCookie() {
   (await cookies()).set({
-    name: "jwt",
+    name: "session",
     value: "",
     path: "/",
     expires: new Date(0), // Unix epoch
@@ -17,6 +17,7 @@ export function parseSetCookie(setCookie: string) {
   const [name, value] = nameValue.split("=");
 
   const getAttr = (key: string) => rest.find((p) => p.toLowerCase().startsWith(`${key.toLowerCase()}=`))?.split("=")[1];
+  console.log(getAttr("expires"));
 
   const expires = getAttr("expires") ? new Date(getAttr("expires")!) : undefined;
   const path = getAttr("path") || "/";

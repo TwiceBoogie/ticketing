@@ -2,17 +2,17 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 
+process.env.JWT_KEY = "random_key_here";
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 declare global {
   var signin: () => string[]; // Explicitly type the return type
 }
 
 jest.mock("../nats-wrapper");
-jest.mock("../stripe");
+jest.mock("../stripe-client");
 
 let mongo: any;
 beforeAll(async () => {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
   // Create an in-memory MongoDB server
   mongo = await MongoMemoryServer.create();
   const mongoUri = mongo.getUri();

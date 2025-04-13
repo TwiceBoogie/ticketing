@@ -21,6 +21,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+  jest.clearAllMocks();
   // Get collections from the in-memory database and clear them
   const collections = await mongoose.connection.db?.collections();
 

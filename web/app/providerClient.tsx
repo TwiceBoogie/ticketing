@@ -10,7 +10,7 @@ import { ICurrentUser } from "@/types/auth";
 
 interface IProps {
   children: React.ReactNode;
-  currentUser?: ICurrentUser;
+  currentUser: ICurrentUser | null;
 }
 
 export default function providerClient({ children, currentUser }: IProps) {

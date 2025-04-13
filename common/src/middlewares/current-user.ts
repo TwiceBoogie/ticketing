@@ -29,7 +29,10 @@ export const currentUser = (
       process.env.JWT_KEY!
     ) as UserPayload;
     req.currentUser = payload;
-  } catch (err) {}
+    console.log("Authenticated user:", req.currentUser);
+  } catch (err) {
+    console.log("JWT verification failed", err);
+  }
 
   next();
 };

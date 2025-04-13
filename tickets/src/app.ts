@@ -15,10 +15,9 @@ app.use(json());
 app.use(
   cookieSession({
     signed: false,
-    // secure: process.env.NODE_ENV !== "test",
-    secure: true,
-    name: "jwt",
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    secure: process.env.NODE_ENV !== "test",
+    httpOnly: true,
+    maxAge: 5 * 1000, // 24 hours
   })
 );
 

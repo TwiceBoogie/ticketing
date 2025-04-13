@@ -51,9 +51,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <head>
+        {/* Sets browser UI theme color */}
         <meta name="theme-color" content="#fff" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png" />
+        {/* manifest crucial for PWA, tells browser how app should behave when installed on users device */}
         <link rel="manifest" href="/site.webmanifest.json" />
         <link rel="shortcut icon" href="/favicon/favicon.ico" />
         {/* Meta info for PWA */}

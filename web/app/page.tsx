@@ -1,11 +1,31 @@
+import TableComponent from "@/components/home/TableComponent";
+import { API_RESPONSE_ERROR } from "@/constants/errorConstants";
 import { SERVICES } from "@/constants/serverUrls";
-import Link from "next/link";
+import DefaultLayout from "@/layouts/default-layout";
+import { Button } from "@heroui/button";
+import { revalidateTag } from "next/cache";
 
 interface ITickets {
   id: string;
   title: string;
   price: string;
+  userId: string;
 }
+
+const columns = [
+  {
+    key: "title",
+    label: "TITLE",
+  },
+  {
+    key: "price",
+    label: "PRICE",
+  },
+  {
+    key: "id",
+    label: "LINK",
+  },
+];
 
 async function getTickets(): Promise<ITickets[] | undefined> {
   try {
@@ -17,11 +37,12 @@ async function getTickets(): Promise<ITickets[] | undefined> {
       next: {
         tags: ["tickets"],
       },
+      cache: "force-cache",
     });
 
     console.log(`[getTickets] fetched at ${new Date().toISOString()}`);
 
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    if (!res.ok) throw new Error(API_RESPONSE_ERROR(res.status));
     return res.json();
   } catch (error) {
     console.error("error has occured: ", error);
@@ -29,6 +50,10 @@ async function getTickets(): Promise<ITickets[] | undefined> {
 }
 
 export default async function Home() {
+  async function refresh() {
+    "use server";
+    revalidateTag("tickets");
+  }
   const tickets = await getTickets();
   if (!tickets) {
     return (
@@ -46,130 +71,16 @@ export default async function Home() {
     );
   }
   return (
-    <div>
-      <h1>Tickets</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Price</th>
-            <th>Link</th>
-          </tr>
-        </thead>
-        <tbody>
-          {tickets.map((ticket) => (
-            <tr key={ticket.id} className="border-b">
-              <td className="px-6 py-4 whitespace-nowrap">{ticket.title}</td>
-              <td className="px-6 py-4 whitespace-nowrap">${ticket.price}</td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <Link
-                  href="/tickets/[ticketId]"
-                  as={`/tickets/${ticket.id}`}
-                  className="text-blue-600 hover:text-blue-800 hover:underline"
-                >
-                  View
-                </Link>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-{
-  /*<DefaultLayout>
-  <div className="relative flex flex-col pb-0 w-full">
-    <div className="text-center">
-      <div className="py-[6px] px-[8px]">
-        <p className="text-sm text-slate-600 px-4 h-6 content-center">
-          TwiceTickets is the world's top destination for ticket buyers and resellers. Prices may be higher or lower
-          than face value.
-        </p>
-      </div>
-    </div>
-    <div className="md:z-[2]">
-      <Navigation />
-    </div>
-    <div className="flex justify-center mt-6">
-      <HeroSection />
-    </div>
-    <div className="bg-red-500">
-      <div>
-        <h2>Recently viewed</h2>
-      </div>
-      <div>
-        <h2>Trending Events Near You</h2>
-      </div>
-      <div>
-        <h2>Recommended for you</h2>
-      </div>
-      <div>
-        <h2>Popular categories</h2>
-      </div>
-    </div>
-    <div className="relative bg-gray-900 py-16 sm:py-24 lg:py-32">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-2">
-          <div className="max-w-xl lg:max-w-lg">
-            <h2 className="text-4xl font-semibold tracking-tight text-white">Subscribe to our newsletter</h2>
-            <p className="mt-4 text-lg text-gray-300">
-              Nostrud amet eu ullamco nisi aute in ad minim nostrud adipisicing velit quis. Duis tempor incididunt
-              dolore.
-            </p>
-            <div className="mt-6 flex max-w-md gap-x-4">
-              <label htmlFor="email-address" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email-address"
-                name="email"
-                type="email"
-                required
-                placeholder="Enter your email"
-                autoComplete="email"
-                className="min-w-0 flex-auto rounded-md bg-white/5 px-3.5 py-2 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
-              />
-              <button
-                type="submit"
-                className="flex-none rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-              >
-                Subscribe
-              </button>
-            </div>
-          </div>
-          <dl className="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:pt-2">
-            <div className="flex flex-col items-start">
-              <div className="rounded-md bg-white/5 p-2 ring-1 ring-white/10">
-                <CalendarDaysIcon aria-hidden="true" className="size-6 text-white" />
-              </div>
-              <dt className="mt-4 text-base font-semibold text-white">Weekly articles</dt>
-              <dd className="mt-2 text-base/7 text-gray-400">
-                Non laboris consequat cupidatat laborum magna. Eiusmod non irure cupidatat duis commodo amet.
-              </dd>
-            </div>
-            <div className="flex flex-col items-start">
-              <div className="rounded-md bg-white/5 p-2 ring-1 ring-white/10">
-                <HandRaisedIcon aria-hidden="true" className="size-6 text-white" />
-              </div>
-              <dt className="mt-4 text-base font-semibold text-white">No spam</dt>
-              <dd className="mt-2 text-base/7 text-gray-400">
-                Officia excepteur ullamco ut sint duis proident non adipisicing. Voluptate incididunt anim.
-              </dd>
-            </div>
-          </dl>
+    <DefaultLayout>
+      <div className="flex flex-1 flex-col justify-center">
+        <div className="flex justify-center items-center gap-5">
+          <h2 className=" text-center text-2xl/9 font-bold tracking-tight text-gray-900 dark:text-gray-300">Tickets</h2>
+          <Button onPress={refresh}>Refresh</Button>
+        </div>
+        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+          <TableComponent<ITickets> name="tickets" data={tickets} columns={columns} />
         </div>
       </div>
-      <div aria-hidden="true" className="absolute top-0 left-1/2 -z-10 -translate-x-1/2 blur-3xl xl:-top-6">
-        <div
-          style={{
-            clipPath:
-              "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-          }}
-          className="aspect-1155/678 w-[72.1875rem] bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-30"
-        />
-      </div>
-    </div>
-  </div>
-</DefaultLayout>*/
+    </DefaultLayout>
+  );
 }
