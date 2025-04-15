@@ -11,9 +11,9 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "baseUrl": "./src",
-    "paths": {
-      "@twicetickets/common": ["../common/src"]
-    },
+    // "paths": {
+    //   "@twicetickets/common": ["../common/src"]
+    // },
 
     /* Interop Constraints */
     "esModuleInterop": true,

@@ -1,4 +1,3 @@
-import { useCsrfToken } from "@/lib/CsrfContext";
 import { addToast, Form } from "@heroui/react";
 import React, { useActionState, useEffect, useState } from "react";
 
@@ -28,7 +27,6 @@ export function SecureFormRoot<TFieldNames extends string, TResult>({
   onSuccess,
   children,
 }: SecureFormProps<TFieldNames, TResult>) {
-  const csrfToken = useCsrfToken();
   const [state, formAction, isPending] = useActionState(action, null);
   const [touched, setTouched] = useState(defaultTouched);
 
@@ -44,7 +42,6 @@ export function SecureFormRoot<TFieldNames extends string, TResult>({
   };
 
   useEffect(() => {
-    console.log("inside useEffect()");
     if (state && !state.ok) {
       setTouched(defaultTouched);
       const formError = state.error.find((e) => e.field === "form");
@@ -61,10 +58,5 @@ export function SecureFormRoot<TFieldNames extends string, TResult>({
       onSuccess?.(state.data);
     }
   }, [state]);
-  return (
-    <Form action={formAction}>
-      <input type="hidden" name="csrfToken" value={csrfToken} />
-      {children({ getError, handleInputChange, touched, isPending })}
-    </Form>
-  );
+  return <Form action={formAction}>{children({ getError, handleInputChange, touched, isPending })}</Form>;
 }

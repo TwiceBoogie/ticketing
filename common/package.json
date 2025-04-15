@@ -2,9 +2,9 @@
   "name": "@twicetickets/common",
   "description": "",
   "main": "dist/index.js",
-  "types": "src/index.ts",
+  "types": "dist/index.d.ts",
   "files": [
-    "dist/**/*"
+    "dist"
   ],
   "scripts": {
     "clean": "rm -rf ./dist/* || del-cli ./dist/*",
@@ -27,5 +27,5 @@
     "jsonwebtoken": "^9.0.2",
     "node-nats-streaming": "^0.3.2"
   },
-  "version": "1.0.31"
+  "version": "1.0.34"
 }

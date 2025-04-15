@@ -1,18 +1,17 @@
 "use server";
 
-import { SERVICES } from "@/constants/serverUrls";
-import { validateCsrfToken } from "@/helpers/csrfToken.helper";
-import { CsrfError } from "@/helpers/errors/CsrfError";
+import { cookies } from "next/headers";
+
+import { z } from "zod";
+
 import { parseSetCookie } from "@/helpers/parseSetCookie.helper";
 import { loginSchema } from "@/helpers/validation.form";
 import { transformZodErrors } from "@/helpers/zod.helpers";
 import { FieldError, IAuthErrorResponse, IAuthResponse, Result } from "@/types/auth";
-import { cookies } from "next/headers";
-import { z } from "zod";
+import { SERVICES } from "@/constants/serverUrls";
 
 export async function signUpAction(prevState: any, formData: FormData): Promise<Result<IAuthResponse, FieldError[]>> {
   try {
-    await validateCsrfToken(formData.get("csrfToken"));
     const validateFields = loginSchema.parse({
       email: formData.get("email"),
       password: formData.get("password"),
@@ -53,12 +52,6 @@ export async function signUpAction(prevState: any, formData: FormData): Promise<
     }
     return { ok: true, data: data as IAuthResponse };
   } catch (error) {
-    if (error instanceof CsrfError) {
-      return {
-        ok: false,
-        error: [{ field: "form", message: error.message }],
-      };
-    }
     if (error instanceof z.ZodError) {
       return {
         ok: false,

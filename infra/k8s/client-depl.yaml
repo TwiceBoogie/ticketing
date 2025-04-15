@@ -15,6 +15,15 @@ spec:
       containers:
         - name: client
           image: twiceboogie13/client
+          env:
+            - name: AUTH_SERVICE_URL
+              value: "http://auth-srv:3000"
+            - name: ORDERS_SERVICE_URL
+              value: "http://orders-srv:3000"
+            - name: PAYMENTS_SERVICE_URL
+              value: "http://payments-srv:3000"
+            - name: TICKET_SERVICE_URL
+              value: "http://tickets-srv:3000"
 ---
 apiVersion: v1
 kind: Service

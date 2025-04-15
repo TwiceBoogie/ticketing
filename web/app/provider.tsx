@@ -1,11 +1,8 @@
-import { SERVICES } from "@/constants/serverUrls";
-import ProviderClient from "./providerClient";
 import { cookies } from "next/headers";
 
-interface ICurrentUser {
-  id: number;
-  email: string;
-}
+import ProviderClient from "./providerClient";
+import { SERVICES } from "@/constants/serverUrls";
+import { ICurrentUser } from "@/types/auth";
 
 interface ICurrentUserResponse {
   currentUser: ICurrentUser | null;

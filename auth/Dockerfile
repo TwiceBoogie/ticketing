@@ -1,37 +1,36 @@
 # ====== Builder Stage ======
-FROM node:20-alpine AS builder
+FROM node:alpine AS builder
 
 WORKDIR /app
 
-# Copy common package first and build
-COPY common ../common
-RUN cd ../common && npm install && npm run build
+# Copy only dependency files first for caching
+COPY package*.json ./
 
-# Install common package into auth
-COPY auth/package*.json ./
-RUN npm install ../common
+# Install all dependencies including dev ones
+RUN npm install
 
-# Copy auth source code and build
-COPY auth/. .
+# Copy the entire source code
+COPY . .
+
+# Build the TypeScript code
 RUN npm run build
 
 # ====== Runner Stage ======
-FROM node:20-alpine
+FROM node:alpine
 
 WORKDIR /app
 
-# Copy runtime dependency definitions
-COPY --from=builder /app/package.json .
-COPY --from=builder /app/package-lock.json .
+# Only copy over package.json and lock for prod install
+COPY package*.json ./
 
-# Install runtime dependencies only
+# Install only production dependencies
 RUN npm install --omit=dev
 
-# NOW copy built auth files
+# Copy compiled JS output only
 COPY --from=builder /app/dist ./dist
 
-# Copy the local dependency AFTER npm install to avoid overwrite
-COPY --from=builder /app/node_modules/@twicetickets/common ./node_modules/@twicetickets/common
+# Set environment variables (override in K8s)
+ENV NODE_ENV=production
 
-EXPOSE 3000
+# Start the service
 CMD ["node", "dist/index.js"]

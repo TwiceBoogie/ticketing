@@ -1,9 +1,7 @@
 import React from "react";
 
 import DefaultLayout from "@/layouts/default-layout";
-// import { AuthRoot } from "@/components/auth";
 import { EAuthModes } from "@/helpers/authentication.helper";
-import { CsrfProvider } from "@/components/forms/CsrfProvider";
 import { AuthForm } from "@/components/forms/AuthForm";
 
 export default async function Login({
@@ -21,9 +19,7 @@ export default async function Login({
           </h2>
         </div>
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <CsrfProvider>
-            <AuthForm authMode={EAuthModes.SIGN_IN} nextPath={next_path as string} />
-          </CsrfProvider>
+          <AuthForm authMode={EAuthModes.SIGN_IN} nextPath={next_path as string} />
         </div>
       </div>
     </DefaultLayout>

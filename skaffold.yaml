@@ -8,17 +8,13 @@ build:
     push: false
   artifacts:
     - image: twiceboogie13/auth
-      context: .
+      context: auth
       docker:
         dockerfile: Dockerfile.dev
-        buildArgs:
-          SERVICE_DIR: auth
       sync:
         manual:
-          - src: "common/src/**/*.ts"
-            dest: common
-          - src: "auth/src/**/*.ts"
-            dest: src
+          - src: "src/**/*.ts"
+            dest: .
     - image: twiceboogie13/client
       context: web
       docker:
@@ -26,53 +22,37 @@ build:
       sync:
         infer: ["**/*"]
     - image: twiceboogie13/tickets
-      context: .
+      context: tickets
       docker:
         dockerfile: Dockerfile.dev
-        buildArgs:
-          SERVICE_DIR: tickets
       sync:
         manual:
-          - src: "common/src/**/*.ts"
-            dest: common
-          - src: "tickets/src/**/*.ts"
-            dest: src
+          - src: "src/**/*.ts"
+            dest: .
     - image: twiceboogie13/orders
-      context: .
+      context: orders
       docker:
         dockerfile: Dockerfile.dev
-        buildArgs:
-          SERVICE_DIR: orders
       sync:
         manual:
-          - src: "common/src/**/*.ts"
-            dest: common
-          - src: "orders/src/**/*.ts"
-            dest: src
+          - src: "src/**/*.ts"
+            dest: .
     - image: twiceboogie13/expiration
-      context: .
+      context: expiration
       docker:
         dockerfile: Dockerfile.dev
-        buildArgs:
-          SERVICE_DIR: expiration
       sync:
         manual:
-          - src: "common/src/**/*.ts"
-            dest: common
-          - src: "expiration/src/**/*.ts"
-            dest: src
+          - src: "src/**/*.ts"
+            dest: .
     - image: twiceboogie13/payments
-      context: .
+      context: payments
       docker:
         dockerfile: Dockerfile.dev
-        buildArgs:
-          SERVICE_DIR: payments
       sync:
         manual:
-          - src: "common/src/**/*.ts"
-            dest: common
-          - src: "payments/src/**/*.ts"
-            dest: src
+          - src: "src/**/*.ts"
+            dest: .
 
 manifests:
   rawYaml:

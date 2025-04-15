@@ -35,28 +35,31 @@ export function middleware(request: NextRequest) {
   if (!isJwt && pathname === "/orders") {
     return NextResponse.redirect(new URL(`/login?next_path=${pathname}`, request.url), 302);
   }
+  if (!isJwt && ["/tickets"].includes(pathname)) {
+    return NextResponse.redirect(new URL(`/login?next_path=${pathname}`, request.url), 302);
+  }
   if (isJwt && ["/login", "/register"].includes(pathname)) {
     return NextResponse.redirect(new URL("/", request.url), 302);
   }
   const response = NextResponse.next();
 
   // so it doesn't run when submitting form (server action)
-  if (request.method === "GET") {
-    const token = generateCsrfToken();
-    response.cookies.set({
-      name: CSRF_COOKIE_NAME,
-      value: token,
-      path: "/",
-      maxAge: 60 * 10, // 10 minutes
-      secure: true,
-      sameSite: "strict",
-      httpOnly: true,
-    });
-  }
+  // if (request.method === "GET") {
+  //   const token = generateCsrfToken();
+  //   response.cookies.set({
+  //     name: CSRF_COOKIE_NAME,
+  //     value: token,
+  //     path: "/",
+  //     maxAge: 60 * 10, // 10 minutes
+  //     secure: true,
+  //     sameSite: "strict",
+  //     httpOnly: true,
+  //   });
+  // }
 
   return response;
 }
 
 export const config = {
-  matcher: ["/login", "/register", "/tickets", "/orders"],
+  matcher: ["/login", "/register", "/tickets", "/orders:path*"],
 };

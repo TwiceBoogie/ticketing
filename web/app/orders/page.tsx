@@ -2,8 +2,6 @@ import React from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { Button } from "@heroui/button";
-
 import DefaultLayout from "@/layouts/default-layout";
 import { FlattenedOrder, OrdersResponse, OrderSuccessResponse } from "@/types/order";
 // CONSTANTS
@@ -77,6 +75,7 @@ const columns = [
 export default async function Orders() {
   const { status, orders } = await getOrders();
   if (status === 401) redirect(`/login?next_path=${currentPath}`);
+  console.log(orders);
   return (
     <DefaultLayout>
       <div className="flex flex-1 flex-col justify-center">

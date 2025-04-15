@@ -14,7 +14,6 @@ type TOrderRoot = {
 
 export default function PurchaseButton(props: TOrderRoot) {
   const { user } = useAuth();
-  console.log(user);
   const { ticketId } = props;
   const [state, formAction, isPending] = useActionState(purchaseTicketAction, null);
   const router = useRouter();

@@ -22,7 +22,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@twicetickets/common": "file:../common",
+    "@twicetickets/common": "^1.0.34",
     "bull": "^4.16.5",
     "dotenv": "^16.4.7",
     "node-nats-streaming": "^0.3.2"

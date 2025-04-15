@@ -1,9 +1,7 @@
 import React from "react";
 
 import DefaultLayout from "@/layouts/default-layout";
-// import { AuthRoot } from "@/components/auth";
 import { EAuthModes } from "@/helpers/authentication.helper";
-import { CsrfProvider } from "@/components/forms/CsrfProvider";
 import { AuthForm } from "@/components/forms/AuthForm";
 
 export default async function Register() {
@@ -16,9 +14,7 @@ export default async function Register() {
           </h2>
         </div>
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <CsrfProvider>
-            <AuthForm authMode={EAuthModes.SIGN_UP} />
-          </CsrfProvider>
+          <AuthForm authMode={EAuthModes.SIGN_UP} />
         </div>
       </div>
     </DefaultLayout>

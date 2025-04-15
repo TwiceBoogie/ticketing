@@ -12,8 +12,6 @@ import { z } from "zod";
 
 export async function signInAction(prevState: any, formData: FormData): Promise<Result<IAuthResponse, FieldError[]>> {
   try {
-    console.log("form sent to server");
-    await validateCsrfToken(formData.get("csrfToken"));
     const validateFields = loginSchema.parse({
       email: formData.get("email"),
       password: formData.get("password"),
@@ -54,12 +52,6 @@ export async function signInAction(prevState: any, formData: FormData): Promise<
     }
     return { ok: true, data: data as IAuthResponse };
   } catch (error) {
-    if (error instanceof CsrfError) {
-      return {
-        ok: false,
-        error: [{ field: "form", message: error.message }],
-      };
-    }
     if (error instanceof z.ZodError) {
       return {
         ok: false,

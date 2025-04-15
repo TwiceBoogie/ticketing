@@ -6,6 +6,7 @@ import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
 import { GeneralError, Order, TOrderAPIResponse } from "@/types/order";
 import { SERVICES } from "@/constants/serverUrls";
 import DefaultLayout from "@/layouts/default-layout";
+import TimeLeft from "@/components/order/TimeLeft";
 
 interface IParams {
   params: Promise<{ orderId: string }>;
@@ -53,6 +54,9 @@ export default async function OrderInfo({ params }: IParams) {
       <div>
         <Card>
           <CardHeader>{order.ticket.title}</CardHeader>
+          <CardBody>
+            <TimeLeft expiresAt={order.expiresAt} />
+          </CardBody>
         </Card>
       </div>
     </DefaultLayout>

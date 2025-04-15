@@ -16,7 +16,6 @@ export async function sellTicketAction(
   formData: FormData
 ): Promise<Result<ITicketResponse, FieldError[]>> {
   try {
-    await validateCsrfToken(formData.get("csrfToken"));
     const validateFields = ticketFormSchema.parse({
       title: formData.get("title"),
       price: formData.get("price"),
@@ -50,12 +49,6 @@ export async function sellTicketAction(
     revalidateTag("tickets");
     return { ok: true, data: data as ITicketResponse };
   } catch (error) {
-    if (error instanceof CsrfError) {
-      return {
-        ok: false,
-        error: [{ field: "form", message: error.message }],
-      };
-    }
     if (error instanceof z.ZodError) {
       return {
         ok: false,
