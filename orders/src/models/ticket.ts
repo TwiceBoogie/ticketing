@@ -44,7 +44,8 @@ const ticketSchema = new mongoose.Schema(
     },
   }
 );
-
+// Optimistic Concurrency Control (OCC)
+// use field called "version" instead of default "__v"
 ticketSchema.set("versionKey", "version");
 ticketSchema.plugin(updateIfCurrentPlugin);
 
@@ -54,7 +55,7 @@ ticketSchema.statics.findByEvent = (event: { id: string; version: number }) => {
     version: event.version - 1,
   });
 };
-
+// enforce type safety, since mongoose accepts anything.
 ticketSchema.statics.build = (attrs: TicketAttrs) => {
   return new Ticket({
     _id: attrs.id,
@@ -62,7 +63,7 @@ ticketSchema.statics.build = (attrs: TicketAttrs) => {
     price: attrs.price,
   });
 };
-
+// add this method to every document instance created from this schema
 ticketSchema.methods.isReserved = async function () {
   // this === the ticket document that we just called 'isReserved' on
   const existingOrder = await Order.findOne({
