@@ -41,6 +41,7 @@ const orderSchema = new mongoose.Schema(
       transform(doc, ret) {
         ret.id = ret._id;
         delete ret._id;
+        delete ret.__v;
       },
     },
   }
@@ -50,13 +51,7 @@ orderSchema.set("versionKey", "version");
 orderSchema.plugin(updateIfCurrentPlugin);
 
 orderSchema.statics.build = (attrs: OrderAttrs) => {
-  return new Order({
-    _id: attrs.id,
-    version: attrs.version,
-    price: attrs.price,
-    userId: attrs.userId,
-    status: attrs.status,
-  });
+  return new Order(attrs);
 };
 
 const Order = mongoose.model<OrderDoc, OrderModel>("Order", orderSchema);

@@ -5,12 +5,16 @@ interface TicketAttrs {
   title: string;
   price: number;
   userId: string;
+  stripeProductId: string;
+  stripePriceId: string;
 }
 
 interface TicketDoc extends mongoose.Document {
   title: string;
   price: number;
   userId: string;
+  stripeProductId: string;
+  stripePriceId: string;
   version: number;
   orderId?: string;
 }
@@ -33,6 +37,14 @@ const ticketSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    stripeProductId: {
+      type: String,
+      required: true,
+    },
+    stripePriceId: {
+      type: String,
+      required: true,
+    },
     orderId: {
       type: String,
     },
@@ -42,6 +54,9 @@ const ticketSchema = new mongoose.Schema(
       transform(doc, ret) {
         ret.id = ret._id;
         delete ret._id;
+        delete ret.__v;
+        delete ret.stripeProductId;
+        delete ret.stripePriceId;
       },
     },
   }

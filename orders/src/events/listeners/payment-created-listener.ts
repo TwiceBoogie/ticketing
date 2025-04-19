@@ -20,8 +20,6 @@ export class PaymentCreatedListener extends Listener<PaymentCreatedEvent> {
       throw new Error("Order not found");
     }
 
-    // const session = await stripe.checkout.sessions.expire(data.stripeId);
-
     order.set({
       status: OrderStatus.Complete,
     });

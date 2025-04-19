@@ -2,7 +2,7 @@
   "name": "@twicetickets/common",
   "description": "",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "types": "src/index.ts",
   "files": [
     "dist"
   ],

@@ -6,9 +6,12 @@ import { TicketDoc } from "./ticket";
 export { OrderStatus };
 
 interface OrderAttrs {
+  _id: string;
   userId: string;
   status: OrderStatus;
   expiresAt: Date;
+  stripeCheckoutId: string;
+  stripeCheckoutUrl: string;
   ticket: TicketDoc;
 }
 
@@ -16,6 +19,8 @@ interface OrderDoc extends mongoose.Document {
   userId: string;
   status: OrderStatus;
   expiresAt: Date;
+  stripeCheckoutId: string;
+  stripeCheckoutUrl: string;
   ticket: TicketDoc;
   version: number;
   createdAt: Date;
@@ -40,6 +45,14 @@ const orderSchema = new mongoose.Schema(
     expiresAt: {
       type: mongoose.Schema.Types.Date,
     },
+    stripeCheckoutId: {
+      type: String,
+      required: true,
+    },
+    stripeCheckoutUrl: {
+      type: String,
+      required: true,
+    },
     ticket: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Ticket",
@@ -54,6 +67,8 @@ const orderSchema = new mongoose.Schema(
       transform(doc, ret) {
         ret.id = ret._id;
         delete ret._id;
+        delete ret.__v;
+        delete ret.stripeCheckoutId;
       },
     },
   }

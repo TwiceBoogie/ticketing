@@ -6,12 +6,14 @@ interface TicketAttrs {
   id: string;
   title: string;
   price: number;
+  stripePriceId: string;
 }
 
 export interface TicketDoc extends mongoose.Document {
   title: string;
   price: number;
   version: number;
+  stripePriceId: string;
   isReserved(): Promise<boolean>;
 }
 
@@ -34,12 +36,17 @@ const ticketSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
+    stripePriceId: {
+      type: String,
+      required: true,
+    },
   },
   {
     toJSON: {
       transform(doc, ret) {
         ret.id = ret._id;
         delete ret._id;
+        delete ret.__v;
       },
     },
   }
@@ -61,8 +68,10 @@ ticketSchema.statics.build = (attrs: TicketAttrs) => {
     _id: attrs.id,
     title: attrs.title,
     price: attrs.price,
+    stripePriceId: attrs.stripePriceId,
   });
 };
+
 // add this method to every document instance created from this schema
 ticketSchema.methods.isReserved = async function () {
   // this === the ticket document that we just called 'isReserved' on

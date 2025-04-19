@@ -25,6 +25,7 @@ export async function purchaseTicketAction(prevState: any, formData: FormData) {
       body: JSON.stringify(validatedFields),
     });
     const data = await res.json();
+    console.log(data);
     if (!res.ok) {
       throw new Error("Something went wrong here");
     }

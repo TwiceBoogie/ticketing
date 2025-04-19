@@ -7,6 +7,7 @@ export interface TicketCreatedEvent {
     version: number;
     title: string;
     price: number;
+    stripePriceId: string;
     userId: string;
   };
 }

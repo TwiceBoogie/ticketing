@@ -73,10 +73,6 @@ export default async function Ticket({ params }: ITicketProps) {
   const { ticketId } = await params;
   const ticket: ITicket | undefined = await getTicket(ticketId);
   const currentUser = await getCurrentUser();
-  if (!currentUser) {
-    // do something
-    return;
-  }
   if (!ticket) {
     return (
       <div>
@@ -84,7 +80,7 @@ export default async function Ticket({ params }: ITicketProps) {
       </div>
     );
   }
-  if (currentUser.id === ticket.userId) {
+  if (currentUser?.id === ticket.userId) {
     return (
       <div>
         <div className="p-4 text-red-500">Cannot purchase your own ticket.</div>

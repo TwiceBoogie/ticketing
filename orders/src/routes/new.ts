@@ -48,11 +48,30 @@ router.post(
     const expiration = new Date();
     expiration.setSeconds(expiration.getSeconds() + EXPIRATION_WINDOW_SECONDS);
 
+    const orderId = new mongoose.Types.ObjectId().toHexString();
+
+    const checkoutSession = await stripe.checkout.sessions.create({
+      line_items: [
+        {
+          price: ticket.stripePriceId,
+        },
+      ],
+      metadata: {
+        orderId: orderId,
+      },
+      mode: "payment",
+      success_url: "http://localhost:3000/orders/success",
+      cancel_url: "http://localhost:3000/orders/canceled",
+    });
+
     // Build the order and save it to the database
     const order = Order.build({
+      _id: orderId,
       userId: req.currentUser!.id,
       status: OrderStatus.Created,
       expiresAt: expiration,
+      stripeCheckoutId: checkoutSession.id,
+      stripeCheckoutUrl: checkoutSession.url!,
       ticket,
     });
     await order.save();
