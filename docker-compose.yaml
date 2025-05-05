@@ -1,0 +1,42 @@
+services:
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+  nats:
+    image: nats-streaming:0.25.3
+    container_name: nats
+    command:
+      - "-p"
+      - "4222"
+      - "-m"
+      - "8222"
+      - "-hbi"
+      - "5s"
+      - "-hbt"
+      - "5s"
+      - "-hbf"
+      - "2"
+      - "-SD"
+      - "-cid"
+      - "ticketing"
+    ports:
+      - "4222:4222" # Client connection port
+      - "8222:8222" # Monitoring port (HTTP)
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8222/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  expiration-redis:
+    image: redis
+    container_name: expiration-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
