@@ -1,8 +1,8 @@
 import React from "react";
 
-import DefaultLayout from "@/layouts/default-layout";
-import { EAuthModes } from "@/helpers/authentication.helper";
 import { AuthForm } from "@/components/forms/AuthForm";
+import { EAuthModes } from "@/helpers/authentication.helper";
+import DefaultLayout from "@/layouts/default-layout";
 
 export default async function Register() {
   return (

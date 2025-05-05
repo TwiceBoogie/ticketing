@@ -21,12 +21,10 @@ router.put(
   requireAuth,
   [
     body("title")
-      .optional()
       .not()
       .isEmpty()
       .withMessage("Title cannot be empty if provided"),
     body("price")
-      .optional()
       .isFloat({ gt: 0 })
       .withMessage("Price must be greater than 0 if provided"),
   ],
@@ -35,9 +33,6 @@ router.put(
     const ticketId = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(ticketId)) {
       throw new NotFoundError();
-    }
-    if (req.body.title === undefined && req.body.price === undefined) {
-      throw new BadRequestError("Must provide title or price to update");
     }
     const ticket = await Ticket.findById(ticketId);
 
@@ -55,7 +50,7 @@ router.put(
 
     let changed = false;
 
-    if (req.body.title && req.body.title !== ticket.title) {
+    if (req.body.title !== ticket.title) {
       await stripe.products.update(ticket.stripeProductId, {
         name: req.body.title,
       });
@@ -63,7 +58,7 @@ router.put(
       changed = true;
     }
 
-    if (req.body.price && req.body.price !== ticket.price) {
+    if (req.body.price !== ticket.price) {
       await stripe.prices.update(ticket.stripePriceId, {
         active: false,
       });

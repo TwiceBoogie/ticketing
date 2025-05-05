@@ -17,7 +17,6 @@ export function parseSetCookie(setCookie: string) {
   const [name, value] = nameValue.split("=");
 
   const getAttr = (key: string) => rest.find((p) => p.toLowerCase().startsWith(`${key.toLowerCase()}=`))?.split("=")[1];
-  console.log(getAttr("expires"));
 
   const expires = getAttr("expires") ? new Date(getAttr("expires")!) : undefined;
   const path = getAttr("path") || "/";

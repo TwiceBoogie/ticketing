@@ -1,0 +1,28 @@
+# Dependencies
+node_modules
+*.log
+
+# Output directories
+dist
+build
+coverage
+
+# Tests and mocks
+**/__tests__/**
+**/__mocks__/**
+**/*.test.*
+**/*.spec.*
+
+# Env files
+.env
+
+# OS-specific files
+.DS_Store
+
+# Optional: Turbo, Yarn, or local caches
+.turbo/
+.pnp.*
+.yarn/cache/
+.vscode
+.github
+docker-compose.yaml

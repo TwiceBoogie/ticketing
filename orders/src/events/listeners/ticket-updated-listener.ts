@@ -15,7 +15,11 @@ export class TicketUpdatedListener extends Listener<TicketUpdatedEvent> {
     }
 
     const { title, price, stripePriceId } = data;
-    ticket.set({ title, price, stripePriceId });
+    if (!stripePriceId) {
+      ticket.set({ title, price });
+    } else {
+      ticket.set({ title, price, stripePriceId });
+    }
     await ticket.save();
 
     msg.ack();

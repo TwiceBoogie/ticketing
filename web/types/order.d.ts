@@ -1,9 +1,12 @@
+import { TAPIResponse } from "./common";
+
 export type Order = {
   id: string;
   userId: string;
   status: string;
   expiresAt: string;
   createdAt: string;
+  stripeCheckoutUrl: string;
   version: number;
   ticket: {
     id: string;
@@ -38,16 +41,5 @@ export type OrderResponse = {
   status: number;
   order: Order;
 };
-
-export type FieldError = {
-  field: string;
-  message: string;
-};
-
-export type GeneralError = {
-  message: string;
-};
-
-export type TAPIResponse<T> = { ok: true; data: T } | { ok: false; errors: GeneralError[] };
 
 export type TOrderAPIResponse = TAPIResponse<Order>;

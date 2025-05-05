@@ -6,6 +6,8 @@ it("implements optimistic concurrency control", async () => {
     title: "concert",
     price: 5,
     userId: "123",
+    stripeProductId: "prod_test_id",
+    stripePriceId: "price_test_id",
   });
 
   // Save the ticket to the database
@@ -37,6 +39,8 @@ it("increments the version number on multiple saves", async () => {
     title: "concert",
     price: 20,
     userId: "123",
+    stripeProductId: "prod_test_id",
+    stripePriceId: "price_test_id",
   });
 
   await ticket.save();

@@ -1,18 +1,17 @@
+import { FieldError } from "@/types/common";
 import { addToast, Form } from "@heroui/react";
 import React, { useActionState, useEffect, useState } from "react";
-
-type FieldError = {
-  field: string;
-  message: string;
-};
 
 type Result<T> = { ok: true; data: T } | { ok: false; error: FieldError[] };
 
 interface SecureFormProps<TFieldNames extends string, TResult> {
-  action: (prevState: any, formData: FormData) => Promise<Result<TResult>>;
-  defaultTouched: Record<TFieldNames, boolean>;
+  // TFieldNames = input names ex. 'password' 'email'
+  action: (prevState: any, formData: FormData) => Promise<Result<TResult>>; // server action
+  defaultTouched: Record<TFieldNames, boolean>; // manage touched state
   onSuccess?: (data: TResult) => void;
+  onError?: (errors: FieldError[]) => void;
   children: (ctx: {
+    // pass a function as a child instead of normal JSX
     // Rendor props
     getError: (field: TFieldNames) => string | undefined;
     handleInputChange: (field: TFieldNames) => void;
@@ -25,6 +24,7 @@ export function SecureFormRoot<TFieldNames extends string, TResult>({
   action,
   defaultTouched,
   onSuccess,
+  onError,
   children,
 }: SecureFormProps<TFieldNames, TResult>) {
   const [state, formAction, isPending] = useActionState(action, null);
@@ -32,6 +32,8 @@ export function SecureFormRoot<TFieldNames extends string, TResult>({
 
   const handleInputChange = (field: TFieldNames) => {
     if (!touched[field]) {
+      // spread the old object and add the field: true
+      // in js if 2 keys are the same, the later one wins
       setTouched((prev) => ({ ...prev, [field]: true }));
     }
   };
@@ -52,6 +54,7 @@ export function SecureFormRoot<TFieldNames extends string, TResult>({
           color: "danger",
         });
       }
+      onError?.(state.error); // for hidden inputs
     }
     if (state && state.ok) {
       setTouched(defaultTouched);

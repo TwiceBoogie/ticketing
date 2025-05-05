@@ -7,10 +7,6 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
-  tls:
-    - hosts:
-        - ticketing.twiceb.dev
-      secretName: twiceb-tls  # ✅ Reference your TLS secret
   rules:
     - host: ticketing.twiceb.dev
       http:

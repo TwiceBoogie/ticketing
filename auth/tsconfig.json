@@ -1,33 +1,7 @@
 {
+  "extends": "@twicetickets/typescript-config/backend.json",
   "compilerOptions": {
-    /* Language and Environment */
-    "target": "ES2022",
-
-    /* Modules */
-    "module": "CommonJS",
-    "moduleResolution": "node",
-
-    /* Project Structure */
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "baseUrl": "./src",
-    "paths": {
-      "@twicetickets/common": ["../common/src"]
-    },
-
-    /* Interop Constraints */
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-
-    /* Type Checking */
-    "strict": true,
-
-    /* Emit Options */
-    "removeComments": true,
-    "sourceMap": false,
-
-    /* Performance */
-    "skipLibCheck": true
+    "outDir": "dist"
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

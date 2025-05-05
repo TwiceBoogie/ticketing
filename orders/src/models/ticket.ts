@@ -47,6 +47,7 @@ const ticketSchema = new mongoose.Schema(
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;
+        delete ret.stripePriceId;
       },
     },
   }
@@ -74,9 +75,9 @@ ticketSchema.statics.build = (attrs: TicketAttrs) => {
 
 // add this method to every document instance created from this schema
 ticketSchema.methods.isReserved = async function () {
-  // this === the ticket document that we just called 'isReserved' on
+  // this refers to the current ticket doc
   const existingOrder = await Order.findOne({
-    ticket: this as any,
+    ticket: this._id,
     status: {
       $in: [
         OrderStatus.Created,

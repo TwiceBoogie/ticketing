@@ -6,7 +6,7 @@ import { TicketDoc } from "./ticket";
 export { OrderStatus };
 
 interface OrderAttrs {
-  _id: string;
+  id?: string;
   userId: string;
   status: OrderStatus;
   expiresAt: Date;
@@ -47,11 +47,15 @@ const orderSchema = new mongoose.Schema(
     },
     stripeCheckoutId: {
       type: String,
-      required: true,
+      required: function (this: { status?: OrderStatus }) {
+        return this.status !== OrderStatus.Cancelled;
+      },
     },
     stripeCheckoutUrl: {
       type: String,
-      required: true,
+      required: function (this: { status?: OrderStatus }) {
+        return this.status !== OrderStatus.Cancelled;
+      },
     },
     ticket: {
       type: mongoose.Schema.Types.ObjectId,
@@ -69,6 +73,9 @@ const orderSchema = new mongoose.Schema(
         delete ret._id;
         delete ret.__v;
         delete ret.stripeCheckoutId;
+        if (ret.status === OrderStatus.Complete) {
+          delete ret.stripeCheckoutUrl;
+        }
       },
     },
   }
@@ -78,7 +85,8 @@ orderSchema.set("versionKey", "version");
 orderSchema.plugin(updateIfCurrentPlugin);
 
 orderSchema.statics.build = (attrs: OrderAttrs) => {
-  return new Order(attrs);
+  const { id: _id, ...rest } = attrs;
+  return new Order(_id ? { _id, ...rest } : rest);
 };
 
 orderSchema.pre<OrderDoc>("save", function (next) {

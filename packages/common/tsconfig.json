@@ -1,0 +1,7 @@
+{
+  "extends": "@twicetickets/typescript-config/backend.json",
+  "compilerOptions": {
+      "outDir": "dist"
+  },
+  "include": ["src"]
+}

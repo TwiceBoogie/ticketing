@@ -1,36 +1,50 @@
-# ====== Builder Stage ======
-FROM node:alpine AS builder
+FROM node:23-alpine AS base
 
+RUN apk add --no-cache libc6-compat
+RUN corepack enable && corepack prepare yarn@4.8.1 --activate
+# Set working directory
 WORKDIR /app
 
-# Copy only dependency files first for caching
-COPY package*.json ./
+# *****************************************************************************
+# STAGE 1: Build the project
+# *****************************************************************************
+FROM base AS builder
 
-# Install all dependencies including dev ones
-RUN npm install
-
-# Copy the entire source code
 COPY . .
+# Install only auth and its dependencies (like @twicetickets/common)
+RUN npx turbo@2.5.0 prune --scope=auth --docker
 
-# Build the TypeScript code
-RUN npm run build
+# *****************************************************************************
+# STAGE 2: Install dependencies & build the project
+# *****************************************************************************
+# Add lockfile and package.json's of isolated subworkspace
+FROM base AS installer
 
-# ====== Runner Stage ======
-FROM node:alpine
+# First install the dependencies (as they change less often)
+COPY .gitignore .gitignore
+COPY --from=builder /app/out/json/ .
+COPY --from=builder /app/out/yarn.lock ./yarn.lock
+RUN yarn install --network-timeout 500000
 
-WORKDIR /app
+# Build the project
+COPY --from=builder /app/out/full/ .
+COPY turbo.json turbo.json
 
-# Only copy over package.json and lock for prod install
-COPY package*.json ./
+RUN yarn build --filter=auth
 
-# Install only production dependencies
-RUN npm install --omit=dev
+# *****************************************************************************
+# STAGE 3: Minimal runtime layer with only what's needed
+# *****************************************************************************
+FROM base AS runner
 
-# Copy compiled JS output only
-COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/out/json/ .
+COPY --from=builder /app/out/yarn.lock ./yarn.lock
 
-# Set environment variables (override in K8s)
-ENV NODE_ENV=production
+RUN yarn workspaces focus --production --all
 
-# Start the service
+# 2. Copy only dist output from auth
+COPY --from=installer /app/auth/dist ./auth/dist
+COPY --from=installer /app/packages/common/dist ./packages/common/dist
+
+WORKDIR /app/auth
 CMD ["node", "dist/index.js"]

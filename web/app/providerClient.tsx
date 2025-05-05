@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 
-import { AuthProvider } from "@/lib/AuthContext";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { HeroUIProvider, ToastProvider } from "@heroui/react";
+
+import { AuthProvider } from "@/lib/AuthContext";
 import { AppProgressBar } from "@/lib/n-progress";
 import { ICurrentUser } from "@/types/auth";
 
@@ -13,7 +14,7 @@ interface IProps {
   currentUser: ICurrentUser | null;
 }
 
-export default function providerClient({ children, currentUser }: IProps) {
+export default function ProviderClient({ children, currentUser }: IProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

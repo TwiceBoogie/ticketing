@@ -3,10 +3,9 @@
 import React, { useCallback } from "react";
 import Link from "next/link";
 
-import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell, getKeyValue } from "@heroui/table";
+import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@heroui/table";
 import { Chip, ChipProps } from "@heroui/chip";
 
-import { useAuth } from "@/lib/AuthContext";
 import { TBase, TTableComponentProps } from "@/types/table";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
@@ -17,11 +16,6 @@ const statusColorMap: Record<string, ChipProps["color"]> = {
 };
 
 function TableComponent<T extends TBase>({ name, data, columns }: TTableComponentProps<T>) {
-  const { user } = useAuth();
-  if (name === "tickets" && user) {
-    data = data.filter((item) => item.userId !== user.id);
-  }
-
   const renderCell = useCallback(
     (item: T, columnKey: keyof T): React.ReactNode => {
       const cellValue = item[columnKey];

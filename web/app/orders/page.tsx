@@ -1,49 +1,17 @@
 import React from "react";
+// NEXT
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-
-import DefaultLayout from "@/layouts/default-layout";
-import { FlattenedOrder, OrdersResponse, OrderSuccessResponse } from "@/types/order";
-// CONSTANTS
-import { API_ORDERS_GET } from "@/constants/endpoints-constants";
+// INTERNAL
 import TableComponent from "@/components/home/TableComponent";
+import { ToastBanner } from "@/components/ui/ToastBanner";
+import { apiRequest, FieldErrorReason } from "@/lib/api/apiRequest";
 import { flattenOrders } from "@/helpers/formatDate.helper";
-
-const currentPath = "/orders";
-
-async function getOrders(): Promise<OrdersResponse> {
-  try {
-    const cookie = (await cookies()).get("session")?.value;
-    if (!cookie) {
-      return { status: 401, orders: [] };
-    }
-    const res = await fetch(API_ORDERS_GET, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        cookie: `session=${cookie}`,
-      },
-      next: {
-        tags: ["orders"],
-      },
-      cache: "force-cache",
-    });
-    if (res.status === 401) {
-      return { status: res.status, orders: [] };
-    }
-    const data: OrderSuccessResponse = await res.json();
-    return {
-      status: res.status,
-      orders: flattenOrders(data),
-    };
-  } catch (error) {
-    console.log("error: ", error);
-    return {
-      status: 500,
-      orders: [],
-    };
-  }
-}
+import DefaultLayout from "@/layouts/default-layout";
+// CONSTANTS
+import { SERVICES } from "@/constants/serverUrls";
+// TYPES
+import { FlattenedOrder, Order } from "@/types/order";
 
 const columns = [
   {
@@ -72,12 +40,38 @@ const columns = [
   },
 ];
 
-export default async function Orders() {
-  const { status, orders } = await getOrders();
-  if (status === 401) redirect(`/login?next_path=${currentPath}`);
-  console.log(orders);
+const currentPath = "/orders";
+
+export default async function Orders({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { status } = await searchParams;
+  const cookie = (await cookies()).get("session")?.value;
+  if (!cookie) {
+    redirect(`/login?next_path=${currentPath}`);
+  }
+  const result = await apiRequest<Order[]>(`${SERVICES.orders}/api/orders`, {
+    method: "GET",
+    headers: {
+      cookie: `session=${cookie}`,
+    },
+  });
+  if (!result.ok) {
+    if (result.error[0].field === FieldErrorReason.UNAUTHORIZED) {
+      redirect(`/login?next_path=${currentPath}`);
+    }
+    return (
+      <div>
+        <div className="p-4 text-red-500">{result.error[0].message}</div>
+      </div>
+    );
+  }
+  const orders = flattenOrders(result.data);
   return (
     <DefaultLayout>
+      {status && <ToastBanner />}
       <div className="flex flex-1 flex-col justify-center">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900 dark:text-gray-300">

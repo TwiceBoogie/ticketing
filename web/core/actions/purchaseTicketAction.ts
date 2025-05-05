@@ -1,49 +1,40 @@
 "use server";
 
-import { SERVICES } from "@/constants/serverUrls";
-import { orderTicketSchema } from "@/helpers/validation.form";
-import { transformZodErrors } from "@/helpers/zod.helpers";
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { z } from "zod";
 
-export async function purchaseTicketAction(prevState: any, formData: FormData) {
+import { SERVICES } from "@/constants/serverUrls";
+import { orderTicketSchema } from "@/helpers/validation.form";
+import { transformZodErrors } from "@/helpers/zod.helpers";
+import { apiRequest } from "@/lib/api/apiRequest";
+import { FieldError, Result } from "@/types/common";
+import { Order } from "@/types/order";
+
+export async function purchaseTicketAction(prevState: any, formData: FormData): Promise<Result<Order, FieldError[]>> {
   const ticketId = formData.get("ticketId");
   const cookie = (await cookies()).get("session")?.value;
   if (!cookie) {
     redirect(`/login?next_path=/tickets/${ticketId}`);
   }
-  try {
-    const validatedFields = orderTicketSchema.parse({ ticketId });
-    const res = await fetch(`${SERVICES.orders}/api/orders`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        cookie: `session=${cookie}`,
-      },
-      body: JSON.stringify(validatedFields),
-    });
-    const data = await res.json();
-    console.log(data);
-    if (!res.ok) {
-      throw new Error("Something went wrong here");
-    }
-    revalidateTag("tickets");
-    return {
-      ok: true,
-      data,
-    };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return {
-        ok: false,
-        error: transformZodErrors(error),
-      };
-    }
+  const validatedFields = orderTicketSchema.safeParse({ ticketId });
+  if (!validatedFields.success) {
     return {
       ok: false,
-      error: [{ field: "form", message: "Something went wrong. Please try again." }],
+      error: transformZodErrors(validatedFields.error),
     };
   }
+
+  const res = await apiRequest<Order>(`${SERVICES.orders}/api/orders`, {
+    method: "POST",
+    headers: {
+      cookie: `session=${cookie}`,
+    },
+    body: JSON.stringify(validatedFields.data),
+  });
+
+  if (res.ok) {
+    revalidateTag("tickets");
+  }
+  return res;
 }

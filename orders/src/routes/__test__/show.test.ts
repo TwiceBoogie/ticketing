@@ -9,6 +9,7 @@ it("fetches the order", async () => {
     id: new mongoose.Types.ObjectId().toHexString(),
     title: "concert",
     price: 20,
+    stripePriceId: "test_price_id",
   });
   await ticket.save();
 
@@ -36,6 +37,7 @@ it("returns an error if one user tries to fetch another users order", async () =
     id: new mongoose.Types.ObjectId().toHexString(),
     title: "concert",
     price: 20,
+    stripePriceId: "test_price_id",
   });
   await ticket.save();
 

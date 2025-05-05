@@ -13,6 +13,7 @@ const expirationQueue = new Queue<Payload>("order:expiration", {
 });
 
 // job is an object that wraps our data and also has some metadata
+// "When there's a job ready to be processed, run this handler"
 expirationQueue.process(async (job) => {
   console.log(`Processing job with orderId: ${job.data}`);
   await new ExpirationCompletePublisher(natsWrapper.client).publish({

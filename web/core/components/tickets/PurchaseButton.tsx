@@ -1,12 +1,17 @@
 "use client";
 
-import React, { useActionState, useEffect } from "react";
-
-import { Button } from "@heroui/button";
-import { purchaseTicketAction } from "@/actions/purchaseTicketAction";
-import { addToast } from "@heroui/toast";
+import React from "react";
 import { useRouter } from "next/navigation";
+
+import { Input } from "@heroui/input";
+import { Button } from "@heroui/button";
+import { addToast } from "@heroui/toast";
+
+import { purchaseTicketAction } from "@/actions/purchaseTicketAction";
 import { useAuth } from "@/lib/AuthContext";
+import { SecureFormRoot } from "../forms/SecureFormRoot";
+
+import { Order } from "@/types/order";
 
 type TOrderRoot = {
   ticketId: string;
@@ -14,30 +19,42 @@ type TOrderRoot = {
 
 export default function PurchaseButton({ ticketId }: TOrderRoot) {
   const { user } = useAuth();
-  const [state, formAction, isPending] = useActionState(purchaseTicketAction, null);
   const router = useRouter();
 
   const isUserMissing = !user;
 
-  useEffect(() => {
-    if (state && state.ok) {
-      addToast({
-        title: "Ticket has been ordered successfully",
-        color: "success",
-      });
-      router.replace("/");
-    }
-    if (state && !state.ok) {
-      console.log("NOT OKAY");
-    }
-  }, [state]);
-
   return (
-    <form action={formAction}>
-      <input type="hidden" name="ticketId" value={ticketId} />
-      <Button color={isUserMissing ? "secondary" : "primary"} type="submit" isDisabled={isPending || isUserMissing}>
-        {isUserMissing ? "Disabled" : "Purchase"}
-      </Button>
-    </form>
+    <SecureFormRoot<"ticketId", Order>
+      action={purchaseTicketAction}
+      defaultTouched={{ ticketId: false }}
+      onSuccess={(data) => {
+        addToast({
+          title: "Ticket ordered successfully!",
+          description: `${data.ticket.title} - $${data.ticket.price}`,
+          color: "success",
+        });
+        router.push("/orders");
+      }}
+      onError={(errors) => {
+        addToast({
+          title: "Something went wrong, please try again later",
+          color: "danger",
+        });
+      }}
+    >
+      {({ getError, handleInputChange, touched, isPending }) => (
+        <>
+          <Input type="hidden" name="ticketId" value={ticketId} />
+          <Button
+            color={isUserMissing ? "secondary" : "primary"}
+            type="submit"
+            isDisabled={isPending || isUserMissing}
+            isLoading={isPending}
+          >
+            {isUserMissing ? "Must be logged in" : isPending ? "Ordering" : "Order Now"}
+          </Button>
+        </>
+      )}
+    </SecureFormRoot>
   );
 }

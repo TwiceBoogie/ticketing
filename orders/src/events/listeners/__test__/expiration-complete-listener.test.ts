@@ -14,6 +14,7 @@ const setup = async () => {
     id: new mongoose.Types.ObjectId().toHexString(),
     title: "concert",
     price: 20,
+    stripePriceId: "test_price_id",
   });
   await ticket.save();
 
@@ -22,13 +23,13 @@ const setup = async () => {
     userId: "alskdfj",
     expiresAt: new Date(),
     ticket,
+    stripeCheckoutId: "test_checkout_id",
+    stripeCheckoutUrl: "test_checkout_url",
   });
   await order.save();
 
-  // Update this with the required `sessionId` property
   const data: ExpirationCompleteEvent["data"] = {
     orderId: order.id,
-    sessionId: new mongoose.Types.ObjectId().toHexString(), // Ensure sessionId is included
   };
 
   //@ts-ignore

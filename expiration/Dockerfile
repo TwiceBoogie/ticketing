@@ -1,37 +1,48 @@
-# ====== Builder Stage ======
-FROM node:20-alpine AS builder
+FROM node:23-alpine AS base
 
+RUN apk add --no-cache libc6-compat
+RUN corepack enable && corepack prepare yarn@4.8.1 --activate
+# Set working directory
 WORKDIR /app
+# *****************************************************************************
+# STAGE 1: Build the project
+# *****************************************************************************
+FROM base AS builder
 
-# Copy common package first and build
-COPY common ../common
-RUN cd ../common && npm install && npm run build
+COPY . .
+# Install only expiration and its dependencies (like @twicetickets/common)
+RUN npx turbo@2.5.0 prune --scope=expiration --docker
 
-# Install common package into expiration
-COPY expiration/package*.json ./
-RUN npm install ../common
+# *****************************************************************************
+# STAGE 2: Install dependencies & build the project
+# *****************************************************************************
+# Add lockfile and package.json's of isolated subworkspace
+FROM base AS installer
 
-# Copy expiration source code and build
-COPY expiration/. .
-RUN npm run build
+COPY .gitignore .gitignore
+COPY --from=builder /app/out/json/ .
+COPY --from=builder /app/out/yarn.lock ./yarn.lock
+RUN yarn install --network-timeout 500000
 
-# ====== Runner Stage ======
-FROM node:20-alpine
+# Build the project
+COPY --from=builder /app/out/full/ .
+COPY turbo.json turbo.json
 
-WORKDIR /app
+RUN yarn turbo run build --filter=expiration
 
-# Copy runtime dependency definitions
-COPY --from=builder /app/package.json .
-COPY --from=builder /app/package-lock.json .
+# *****************************************************************************
+# STAGE 3: Minimal runtime layer with only what's needed
+# *****************************************************************************
+FROM base AS runner
 
-# Install runtime dependencies only
-RUN npm install --omit=dev
+COPY --from=builder /app/out/json/ .
+COPY --from=builder /app/out/yarn.lock ./yarn.lock
 
-# NOW copy built expiration files
-COPY --from=builder /app/dist ./dist
+RUN yarn workspaces focus --production --all
 
-# Copy the local dependency AFTER npm install to avoid overwrite
-COPY --from=builder /app/node_modules/@twicetickets/common ./node_modules/@twicetickets/common
+# 2. Copy only dist output from expiration
+COPY --from=installer /app/expiration/dist ./expiration/dist
+COPY --from=installer /app/packages/common/dist ./packages/common/dist
 
-EXPOSE 3000
+WORKDIR /app/expiration
 CMD ["node", "dist/index.js"]

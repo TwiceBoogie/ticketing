@@ -1,38 +1,24 @@
 import { cookies } from "next/headers";
 
 import ProviderClient from "./providerClient";
+import { apiRequest } from "@/lib/api/apiRequest";
+
 import { SERVICES } from "@/constants/serverUrls";
-import { ICurrentUser } from "@/types/auth";
-
-interface ICurrentUserResponse {
-  currentUser: ICurrentUser | null;
-}
-
-async function getCurrentUser(): Promise<ICurrentUser | null> {
-  try {
-    const session = (await cookies()).get("session")?.value;
-    if (!session) {
-      return null;
-    }
-    const res = await fetch(`${SERVICES.auth}/api/users/currentuser`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: `session=${session}`,
-      },
-    });
-
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-    const data: ICurrentUserResponse = await res.json();
-    return data.currentUser;
-  } catch (error) {
-    console.error("Failed to fetch current user:", error);
-    return null;
-  }
-}
+import { ICurrentUser, ICurrentUserResponse } from "@/types/auth";
 
 export async function Providers({ children }: { children: React.ReactNode }) {
-  const currentUser = await getCurrentUser();
+  let currentUser: ICurrentUser | null = null;
+  const session = (await cookies()).get("session")?.value;
+  const result = await apiRequest<ICurrentUserResponse>(`${SERVICES.auth}/api/users/currentuser`, {
+    method: "GET",
+    headers: {
+      Cookie: `session=${session}`,
+    },
+  });
+  if (result.ok) {
+    currentUser = result.data.currentUser;
+  }
+
   return (
     <>
       <ProviderClient currentUser={currentUser}>{children}</ProviderClient>

@@ -8,6 +8,7 @@ import {
 import { Order, OrderStatus } from "../models/order";
 import { OrderCancelledPublisher } from "../events/publishers/order-cancelled-publisher";
 import { natsWrapper } from "../nats-wrapper";
+import { stripe } from "../stripe-client";
 
 const router = express.Router();
 
@@ -25,7 +26,14 @@ router.delete(
     if (order.userId !== req.currentUser!.id) {
       throw new NotAuthorizedError();
     }
-    order.status = OrderStatus.Cancelled;
+
+    await stripe.checkout.sessions.expire(order.stripeCheckoutId);
+
+    order.set({
+      status: OrderStatus.Cancelled,
+      stripeCheckoutId: undefined,
+      stripeCheckoutUrl: undefined,
+    });
     await order.save();
 
     // publishing an event saying this was cancelled!
@@ -37,7 +45,7 @@ router.delete(
       },
     });
 
-    res.status(204).send(order);
+    res.status(200).send(order);
   }
 );
 

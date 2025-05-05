@@ -2,65 +2,42 @@
 
 import { cookies } from "next/headers";
 
-import { z } from "zod";
-
 import { parseSetCookie } from "@/helpers/parseSetCookie.helper";
 import { loginSchema } from "@/helpers/validation.form";
 import { transformZodErrors } from "@/helpers/zod.helpers";
-import { FieldError, IAuthErrorResponse, IAuthResponse, Result } from "@/types/auth";
+import { IAuthResponse } from "@/types/auth";
+import { FieldError, Result } from "@/types/common";
 import { SERVICES } from "@/constants/serverUrls";
+import { apiRequest } from "@/lib/api/apiRequest";
 
 export async function signUpAction(prevState: any, formData: FormData): Promise<Result<IAuthResponse, FieldError[]>> {
-  try {
-    const validateFields = loginSchema.parse({
-      email: formData.get("email"),
-      password: formData.get("password"),
-    });
+  const validateFields = loginSchema.safeParse({
+    email: formData.get("email"),
+    password: formData.get("password"),
+  });
 
-    const res = await fetch(`${SERVICES.auth}/api/users/signup`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(validateFields),
-    });
-
-    const data: IAuthResponse | IAuthErrorResponse = await res.json();
-
-    if (!res.ok && "errors" in data) {
-      const normalizedErrors: FieldError[] = data.errors.map((e) => ({
-        field: e.field ?? "form",
-        message: e.message,
-      }));
-      return {
-        ok: false,
-        error: normalizedErrors,
-      };
-    }
-
-    const setCookieHeader = res.headers.get("set-cookie");
-    if (setCookieHeader) {
-      const parsed = parseSetCookie(setCookieHeader);
-      (await cookies()).set({
-        name: parsed.name,
-        value: parsed.value,
-        httpOnly: parsed.httpOnly,
-        expires: parsed.expires,
-        path: parsed.path,
-        secure: parsed.secure,
-      });
-    }
-    return { ok: true, data: data as IAuthResponse };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return {
-        ok: false,
-        error: transformZodErrors(error),
-      };
-    }
+  if (!validateFields.success) {
     return {
       ok: false,
-      error: [{ field: "form", message: "Something went wrong. Please try again." }],
+      error: transformZodErrors(validateFields.error),
     };
   }
+
+  const res = await apiRequest<IAuthResponse>(`${SERVICES.auth}/api/users/signup`, {
+    method: "POST",
+    body: JSON.stringify(validateFields.data),
+  });
+
+  if (res.ok && res.cookieHeader) {
+    const parsed = parseSetCookie(res.cookieHeader);
+    (await cookies()).set({
+      name: parsed.name,
+      value: parsed.value,
+      httpOnly: parsed.httpOnly,
+      expires: parsed.expires,
+      path: parsed.path,
+      secure: parsed.secure,
+    });
+  }
+  return res;
 }

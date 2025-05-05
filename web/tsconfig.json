@@ -1,32 +1,64 @@
 {
+  "extends": "@twicetickets/typescript-config/nextjs.json",
   "compilerOptions": {
-    "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
     "baseUrl": ".",
     "paths": {
       "@/*": ["core/*"],
+
+      // // Explicit mappings
+      // "@/actions/*": ["core/actions/*"],
+      // "@/components/*": ["core/components/*"],
+      // "@/constants/*": ["core/constants/*"],
+      // "@/hooks/*": ["core/hooks/*"],
+      // "@/layouts/*": ["core/layouts/*"],
+      // "@/lib/*": ["core/lib/*"],
+
       "@/helpers/*": ["helpers/*"],
       "@/public/*": ["public/*"],
       "@/styles/*": ["styles/*"],
       "@/types/*": ["types/*"]
-    }
+    },
+    "plugins": [{ "name": "next" }]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "types/**/*.d.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "types/**/*.d.ts"
+  ],
   "exclude": ["node_modules"]
 }
+
+// {
+//   "compilerOptions": {
+//     "target": "ES2017",
+//     "lib": ["dom", "dom.iterable", "esnext"],
+//     "allowJs": true,
+//     "skipLibCheck": true,
+//     "strict": true,
+//     "noEmit": true,
+//     "esModuleInterop": true,
+//     "module": "esnext",
+//     "moduleResolution": "bundler",
+//     "resolveJsonModule": true,
+//     "isolatedModules": true,
+//     "jsx": "preserve",
+//     "incremental": true,
+//     "plugins": [
+//       {
+//         "name": "next"
+//       }
+//     ],
+//     "baseUrl": ".",
+//     "paths": {
+//       "@/*": ["core/*"],
+//       "@/helpers/*": ["helpers/*"],
+//       "@/public/*": ["public/*"],
+//       "@/styles/*": ["styles/*"],
+//       "@/types/*": ["types/*"]
+//     }
+//   },
+//   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "types/**/*.d.ts"],
+//   "exclude": ["node_modules"]
+// }

@@ -51,7 +51,13 @@ orderSchema.set("versionKey", "version");
 orderSchema.plugin(updateIfCurrentPlugin);
 
 orderSchema.statics.build = (attrs: OrderAttrs) => {
-  return new Order(attrs);
+  return new Order({
+    _id: attrs.id,
+    price: attrs.price,
+    status: attrs.status,
+    userId: attrs.userId,
+    version: attrs.version,
+  });
 };
 
 const Order = mongoose.model<OrderDoc, OrderModel>("Order", orderSchema);

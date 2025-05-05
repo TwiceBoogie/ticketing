@@ -8,51 +8,29 @@ build:
     push: false
   artifacts:
     - image: twiceboogie13/auth
-      context: auth
+      context: .
       docker:
-        dockerfile: Dockerfile.dev
-      sync:
-        manual:
-          - src: "src/**/*.ts"
-            dest: .
+        dockerfile: auth/Dockerfile
     - image: twiceboogie13/client
-      context: web
+      context: .
       docker:
-        dockerfile: Dockerfile
-      sync:
-        infer: ["**/*"]
+        dockerfile: web/Dockerfile
     - image: twiceboogie13/tickets
-      context: tickets
+      context: .
       docker:
-        dockerfile: Dockerfile.dev
-      sync:
-        manual:
-          - src: "src/**/*.ts"
-            dest: .
+        dockerfile: tickets/Dockerfile
     - image: twiceboogie13/orders
-      context: orders
+      context: .
       docker:
-        dockerfile: Dockerfile.dev
-      sync:
-        manual:
-          - src: "src/**/*.ts"
-            dest: .
+        dockerfile: orders/Dockerfile
     - image: twiceboogie13/expiration
-      context: expiration
+      context: .
       docker:
-        dockerfile: Dockerfile.dev
-      sync:
-        manual:
-          - src: "src/**/*.ts"
-            dest: .
+        dockerfile: expiration/Dockerfile
     - image: twiceboogie13/payments
-      context: payments
+      context: .
       docker:
-        dockerfile: Dockerfile.dev
-      sync:
-        manual:
-          - src: "src/**/*.ts"
-            dest: .
+        dockerfile: payments/Dockerfile
 
 manifests:
   rawYaml:

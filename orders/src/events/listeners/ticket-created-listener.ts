@@ -16,10 +16,7 @@ export class TicketCreatedListener extends Listener<TicketCreatedEvent> {
       price,
       stripePriceId,
     });
-    console.log(
-      `${id} from ticket-service`,
-      `${ticket.id} id from orders-service (here)`
-    );
+
     await ticket.save();
 
     msg.ack();

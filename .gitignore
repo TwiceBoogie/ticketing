@@ -26,3 +26,7 @@ package-lock.json
 client/
 docker-compose.yaml
 .vscode
+.github/dependabot.yaml
+.turbo
+.yarn
+nats-test/

@@ -1,7 +1,7 @@
 import React from "react";
 
-import DefaultLayout from "@/layouts/default-layout";
 import { SellTicketForm } from "@/components/forms/SellTicketForm";
+import DefaultLayout from "@/layouts/default-layout";
 
 export default function Tickets() {
   return (

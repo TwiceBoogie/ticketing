@@ -20,6 +20,7 @@ it("returns an error if the ticket is already reserved", async () => {
     id: new mongoose.Types.ObjectId().toHexString(),
     title: "concert",
     price: 20,
+    stripePriceId: "test_price_id",
   });
   await ticket.save();
   const order = Order.build({
@@ -27,6 +28,8 @@ it("returns an error if the ticket is already reserved", async () => {
     userId: "laskdflkajsdf",
     status: OrderStatus.Created,
     expiresAt: new Date(),
+    stripeCheckoutId: "test_checkout_id",
+    stripeCheckoutUrl: "test_checkout_url",
   });
   await order.save();
 
@@ -42,6 +45,7 @@ it("reserves a ticket", async () => {
     id: new mongoose.Types.ObjectId().toHexString(),
     title: "concert",
     price: 20,
+    stripePriceId: "test_price_id",
   });
   await ticket.save();
 
@@ -57,6 +61,7 @@ it("emits an order created event", async () => {
     id: new mongoose.Types.ObjectId().toHexString(),
     title: "concert",
     price: 20,
+    stripePriceId: "test_price_id",
   });
   await ticket.save();
 

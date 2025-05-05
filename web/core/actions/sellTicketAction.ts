@@ -1,63 +1,44 @@
 "use server";
 
-import { SERVICES } from "@/constants/serverUrls";
-import { validateCsrfToken } from "@/helpers/csrfToken.helper";
-import { CsrfError } from "@/helpers/errors/CsrfError";
-import { ticketFormSchema } from "@/helpers/validation.form";
-import { transformZodErrors } from "@/helpers/zod.helpers";
-import { FieldError, Result } from "@/types/auth";
-import { ITicketErrorResponse, ITicketResponse } from "@/types/ticket";
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
-import { z } from "zod";
+// HELPERS
+import { ticketFormSchema } from "@/helpers/validation.form";
+import { transformZodErrors } from "@/helpers/zod.helpers";
+// TYPES
+import { FieldError, Result } from "@/types/common";
+import { ITicketResponse } from "@/types/ticket";
+// CONSTANTS
+import { SERVICES } from "@/constants/serverUrls";
+import { apiRequest } from "@/lib/api/apiRequest";
 
 export async function sellTicketAction(
   prevState: any,
   formData: FormData
 ): Promise<Result<ITicketResponse, FieldError[]>> {
-  try {
-    const validateFields = ticketFormSchema.parse({
-      title: formData.get("title"),
-      price: formData.get("price"),
-    });
+  const validateFields = ticketFormSchema.safeParse({
+    title: formData.get("title"),
+    price: formData.get("price"),
+  });
 
-    const session = (await cookies()).get("session")?.value;
-    const res = await fetch(`${SERVICES.tickets}/api/tickets`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: `session=${session}`,
-      },
-      body: JSON.stringify(validateFields),
-    });
-
-    const data: ITicketResponse | ITicketErrorResponse = await res.json();
-    console.log(data);
-
-    if (!res.ok && "errors" in data) {
-      const normalizedErrors: FieldError[] = data.errors.map((e) => ({
-        field: e.field ?? "form",
-        message: e.message,
-      }));
-      return {
-        ok: false,
-        error: normalizedErrors,
-      };
-    }
-
-    // everything okay
-    revalidateTag("tickets");
-    return { ok: true, data: data as ITicketResponse };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return {
-        ok: false,
-        error: transformZodErrors(error),
-      };
-    }
+  if (!validateFields.success) {
     return {
       ok: false,
-      error: [{ field: "form", message: "Something went wrong. Please try again." }],
+      error: transformZodErrors(validateFields.error),
     };
   }
+
+  const session = (await cookies()).get("session")?.value;
+  const res = await apiRequest<ITicketResponse>(`${SERVICES.tickets}/api/tickets`, {
+    method: "POST",
+    headers: {
+      Cookie: `session=${session}`,
+    },
+    body: JSON.stringify(validateFields.data),
+  });
+
+  if (res.ok) {
+    revalidateTag("tickets");
+  }
+  return res;
 }

@@ -6,90 +6,49 @@ import { Order } from "../../models/order";
 import { stripe } from "../../stripe-client";
 import { Payment } from "../../models/payment";
 
-it("returns a 404 when purchasing an order that does not exist", async () => {
-  await request(app)
-    .post("/api/payments")
-    .set("Cookie", global.signin())
-    .send({
-      token: "asldkfj",
-      orderId: new mongoose.Types.ObjectId().toHexString(),
-    })
-    .expect(404);
-});
-
-it("returns a 401 when purchasing an order that doesnt belong to the user", async () => {
+it("creates a payment and saves it to the DB when receiving a fake but valid stripe webook", async () => {
+  const orderId = new mongoose.Types.ObjectId().toHexString();
   const order = Order.build({
-    id: new mongoose.Types.ObjectId().toHexString(),
-    userId: new mongoose.Types.ObjectId().toHexString(),
+    id: orderId,
+    userId: "test_user_id",
     version: 0,
-    price: 20,
+    price: 5000,
     status: OrderStatus.Created,
   });
   await order.save();
+  // fake event checkout.session.complete
+  const fakeEvent = {
+    id: "evt_test_id",
+    object: "event",
+    type: "checkout.session.completed",
+    data: {
+      object: {
+        id: "cs_test_id",
+        metadata: {
+          orderId: order.id,
+        },
+      },
+    },
+  };
 
-  await request(app)
-    .post("/api/payments")
-    .set("Cookie", global.signin())
-    .send({
-      token: "asldkfj",
-      orderId: order.id,
-    })
-    .expect(401);
-});
-
-it("returns a 400 when purchasing a cancelled order", async () => {
-  const userId = new mongoose.Types.ObjectId().toHexString();
-  const order = Order.build({
-    id: new mongoose.Types.ObjectId().toHexString(),
-    userId,
-    version: 0,
-    price: 20,
-    status: OrderStatus.Cancelled,
+  // test header helper since it needs a stripe signature else it fails
+  const body = JSON.stringify(fakeEvent);
+  const sig = stripe.webhooks.generateTestHeaderString({
+    payload: body,
+    secret: process.env.WEBHOOK_KEY!,
   });
-  await order.save();
 
   await request(app)
-    .post("/api/payments")
-    .set("Cookie", global.signin(userId))
-    .send({
-      orderId: order.id,
-      token: "asdlkfj",
-    })
-    .expect(400);
-});
+    .post("/api/payments/webhook")
+    .set("Stripe-Signature", sig)
+    .set("Content-Type", "application/json")
+    .send(body)
+    .expect(200);
 
-it("returns a 201 with valid inputs", async () => {
-  const userId = new mongoose.Types.ObjectId().toHexString();
-  const price = Math.floor(Math.random() * 100000);
-
-  const order = Order.build({
-    id: new mongoose.Types.ObjectId().toHexString(),
-    userId,
-    version: 0,
-    price,
-    status: OrderStatus.Created,
-  });
-  await order.save();
-
-  await request(app)
-    .post("/api/payments")
-    .set("Cookie", global.signin(userId))
-    .send({
-      token: "tok_visa",
-      orderId: order.id,
-    })
-    .expect(201);
-
-  // ✅ Assert the stripe.charges.create call
-  const chargeOptions = (stripe.charges.create as jest.Mock).mock.calls[0][0];
-  expect(chargeOptions.source).toEqual("tok_visa");
-  expect(chargeOptions.amount).toEqual(price * 100);
-  expect(chargeOptions.currency).toEqual("usd");
-
-  // ✅ Assert that a payment was saved with the correct stripeId
+  // assert payment is stored in the db
   const payment = await Payment.findOne({
     orderId: order.id,
-    stripeId: "ch_test_id",
+    stripeId: "cs_test_id",
   });
   expect(payment).not.toBeNull();
 });

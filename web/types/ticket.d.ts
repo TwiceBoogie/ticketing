@@ -1,4 +1,4 @@
-import { FieldError } from "./auth";
+import { FieldError } from "./common";
 
 export interface ITicketResponse {
   id: string;
@@ -8,4 +8,11 @@ export interface ITicketResponse {
 
 export interface ITicketErrorResponse {
   errors: FieldError[];
+}
+
+export interface ITicket {
+  id: string;
+  title: string;
+  price: string;
+  userId: string;
 }

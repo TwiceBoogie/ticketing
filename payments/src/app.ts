@@ -21,12 +21,12 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(currentUser);
+// app.use(currentUser);
 
 app.use(createChargeRouter);
 
 app.all("*", async (req, res) => {
-  res.redirect(`${process.env.REDIRECT_USER!}`);
+  res.status(404).send({ message: "Not Found" });
 });
 
 app.use(errorHandler);

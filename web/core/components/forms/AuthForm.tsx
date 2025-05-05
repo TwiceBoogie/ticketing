@@ -20,12 +20,16 @@ type TAuthRoot = {
 
 export function AuthForm(props: TAuthRoot) {
   const { authMode, nextPath } = props;
-  const { setUser } = useAuth();
+  const { user, setUser } = useAuth();
   const router = useRouter();
-  useEffect(() => {
-    // won't rerender since setUser is a stable reference
-    setUser(null);
-  }, []);
+  // useEffect(() => {
+  //   // If user already null avoid unnecessary context updates.
+  //   // since browser may have removed cookie, remove user for
+  //   // ui changes
+  //   if (user !== null) {
+  //     setUser(null);
+  //   }
+  // }, [user]);
   // works the first time but if you try again and get redirect here with next_path, it won't show
   useEffect(() => {
     if (nextPath && typeof window !== "undefined") {
@@ -51,6 +55,7 @@ export function AuthForm(props: TAuthRoot) {
       onSuccess={(data) => {
         addToast({
           title: `Successfully ${authMode === "SIGN_IN" ? "Logged In" : "Registered"}`,
+          color: "success",
         });
         setUser(data);
         router.replace(nextPath ?? "/");
@@ -74,8 +79,8 @@ export function AuthForm(props: TAuthRoot) {
             isInvalid={!touched.password && !!getError("password")}
             errorMessage={!touched.password ? getError("password") : ""}
           />
-          <Button type="submit" disabled={isPending} color="primary">
-            {isPending ? "Submitting..." : "Sign In"}
+          <Button type="submit" disabled={isPending} color="primary" isLoading={isPending}>
+            {isPending ? "Submitting..." : "Submit"}
           </Button>
         </>
       )}

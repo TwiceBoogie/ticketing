@@ -17,7 +17,7 @@ app.use(
     signed: false,
     secure: process.env.NODE_ENV !== "test",
     httpOnly: true,
-    maxAge: 5 * 1000, // 24 hours
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
   })
 );
 
