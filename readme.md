@@ -64,7 +64,12 @@ $ stripe listen --forward-to localhost:3000/api/payments/webhook
 
 $ chmod +x setup.sh && ./setup.sh # fill out infra/k8s/{jwt/stripe-secret.yaml} files
 
+# OPTION 1: With Skaffold
 $ skaffold dev
+
+# OPTION 2: Without Skaffold (manual Docker build & deploy)
+$ chmod +x manual-deploy.sh
+$ ./manual-deploy.sh
 
 $ kubectl port-forward svc/payments-srv 3000:3000 --namespace=development
 ```
