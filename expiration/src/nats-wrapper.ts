@@ -30,7 +30,7 @@ class NatsWrapper {
           resolve();
         });
         this.client.on("error", (err) => {
-          console.error("Nats connection error: ", err);
+          console.error("Nats connection error: ", err.message);
 
           if (attempts < maxAttempts) {
             const delay = Math.min(baseDelay * 2 ** (attempts - 1), 30000); // Exponential backoff

@@ -12,7 +12,7 @@ FROM base AS builder
 
 COPY . .
 # Install only auth and its dependencies (like @twicetickets/common)
-RUN npx turbo@2.5.0 prune --scope=auth --docker
+RUN yarn dlx turbo@2.5.0 prune --scope=auth --docker
 
 # *****************************************************************************
 # STAGE 2: Install dependencies & build the project

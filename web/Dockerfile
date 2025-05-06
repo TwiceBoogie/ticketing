@@ -9,7 +9,7 @@ WORKDIR /app
 # *****************************************************************************
 FROM base AS builder
 COPY . .
-RUN npx turbo prune --scope=web --docker
+RUN yarn dlx turbo prune --scope=web --docker
 
 # *****************************************************************************
 # STAGE 2: Install dependencies & build the project

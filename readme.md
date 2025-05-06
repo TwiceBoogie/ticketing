@@ -1,8 +1,7 @@
-# Ticket Event Microservice App (Work in Progress)
+# Ticket Event Microservice App
 
 This is a microservice-based application for managing events and ticket sales. The application is built using TypeScript and consists of the following services;
 
-- **Api-gateway service**: This service is responsible for routing user requests to the appropriate backend service.
 - **Auth service**: This service handles user authentication and authorization.
 - **Client service** (Next.js): This service provides a web-based user interface for interacting with the application.
 - **Expiration service**: This service is responsible for managing the expiration of tickets that are reserved but not - purchased.
@@ -19,31 +18,55 @@ This is a microservice-based application for managing events and ticket sales. T
 
 ## Quick Start
 
-### With Docker And Skaffold
+> ❗ **Required:** Install the [Stripe Cli](https://docs.stripe.com/stripe-cli)\
+> You must have Stripe cli downloaded locally in order for the project to work properly and run `stripe login`
 
-- Clone repo.
-- Make sure you have Docker [installed locally](https://docs.docker.com/engine/install/).
-- Make sure you have Skaffold [installed locally](https://skaffold.dev/docs/install/)
-- Make sure you have [Ingress-Nginx Controller installed](https://kubernetes.github.io/ingress-nginx/deploy/#quick-start) _(Note: we are using Kubernetes/ingress-nginx and not Kubernetes-ingress, if you are looking for documentation)_
-- Once you have confirmed that ingress-nginx controller is installed, you need to identify if port 80 is running and shut it down (from other apps).
-- Make sure to run `kubectl create secret generic my-secret --from-literal=JWT_KEY=<Your secret key>`, if you don't do this the app will crash.
-- Make a small configuration change on your computer to your host file to make an additional routing rules. Add `127.0.0.1 ticketing.dev` into your host file.
-<table>
-<tr>
-<th>Windows</th>
-<th>Mac</th>
-</tr>
-<tr>
-<td>
-C:\Windows\System32\Drivers\etc\hosts
-</td>
-<td>
-/etc/hosts
-</td>
-</tr>
-</table>
+### Running locally
 
-- Make sure you are inside the project root directory and run `skaffold run`, Skaffold will orchestrate the build and deployment process for you.
-- :coffee: time... It might take some time for the app to setup in the first skaffold run.
-- Open <http://ticketing.dev> in your browser.
-- Enjoy!
+> **Note:** \
+> The `web` (Next.js) app uses port 3000, so payments is exposed on 3003 to avoid conflict. Same goes for other services.
+
+```
+$ git clone https://github.com/TwiceBoogie/ticketing.git
+
+$ cd ticketing/
+
+$ docker compose up -d
+
+$ yarn install
+
+$ yarn build --filter=@twicetickets/common
+
+# copy and paste the whsec_ string into payments/.env
+$ stripe listen --forward-to localhost:3003/api/payments/webhook
+
+$ chmod +x setup.sh && ./setup.sh # fill out .env files on each service
+
+$ yarn dev
+```
+
+### Running with Docker And Kubernetes
+
+> ❗ **Required:** Install [Ingress-Nginx Controller](https://kubernetes.github.io/ingress-nginx/deploy/) \
+> Must have this as your reverse proxy so request can be forwarded to the correct service.
+
+> **Note:** Install [Skaffold](https://skaffold.dev/docs/install/) (optional) \
+> Skaffold is optional, I only use it to have all logs aggregated in 1 spot
+> and to build images and apply kubernetes files with 1 command `skaffold dev`
+
+```
+$ git clone https://github.com/TwiceBoogie/ticketing.git
+
+$ cd ticketing/
+
+# copy and paste the whsec_ string into infra/k8s/stripe_secret.yaml
+$ stripe listen --forward-to localhost:3000/api/payments/webhook
+
+$ chmod +x setup.sh && ./setup.sh # fill out infra/k8s/{jwt/stripe-secret.yaml} files
+
+$ skaffold dev
+
+$ kubectl port-forward svc/payments-srv 3000:3000 --namespace=development
+```
+
+- Make a small configuration change on your computer to your host file to make an additional routing rules. Add `127.0.0.1 ticketing.app` into your host file.

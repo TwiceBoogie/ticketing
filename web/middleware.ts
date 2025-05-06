@@ -27,7 +27,6 @@ function generateCsrfToken() {
 }
 
 export function middleware(request: NextRequest) {
-  console.log("hit middleware");
   const session = request.cookies.get("session")?.value;
   const isJwt = isProbablyJwt(session);
   const pathname = request.nextUrl.pathname;

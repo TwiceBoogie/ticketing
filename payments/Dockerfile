@@ -11,7 +11,7 @@ FROM base AS builder
 
 COPY . .
 # Install only payments and its dependencies (like @twicetickets/common)
-RUN npx turbo@2.5.0 prune --scope=payments --docker
+RUN yarn dlx turbo@2.5.0 prune --scope=payments --docker
 
 # *****************************************************************************
 # STAGE 2: Install dependencies & build the project
